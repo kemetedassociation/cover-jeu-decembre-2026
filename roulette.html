@@ -1,0 +1,943 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#C8102E">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icone-180.png">
+<link rel="icon" href="icone-192.png">
+<title>Roulette COVER</title>
+<style>
+  :root {
+    --rouge: #C8102E;
+    --rouge-fonce: #9E0C24;
+    --noir: #111111;
+    --blanc: #FFFFFF;
+    --gris: #F2F2F2;
+    --gris-texte: #555555;
+    --vert: #1E7A3A;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    background: var(--blanc);
+    color: var(--noir);
+    font-family: "Helvetica Neue", Arial, system-ui, sans-serif;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+  }
+  .titre { font-weight: 900; text-transform: uppercase; letter-spacing: .02em; line-height: 1.05; }
+  button { font: inherit; border: 0; cursor: pointer; color: inherit; background: none; }
+  button:disabled { opacity: .4; cursor: not-allowed; }
+
+  /* Bandeaux */
+  #bandeau {
+    background: var(--rouge); color: var(--blanc);
+    padding: 12px 16px; text-align: center;
+    font-weight: 900; text-transform: uppercase; font-size: clamp(16px, 2.4vmin, 26px);
+  }
+  #bandeau.ferme { background: var(--noir); }
+  #alerte-memoire, #bandeau-test {
+    display: none; padding: 10px 16px; text-align: center; font-weight: 800; font-size: clamp(14px, 2vmin, 20px);
+  }
+  #alerte-memoire { background: #FFE08A; color: var(--noir); }
+  #bandeau-test { background: repeating-linear-gradient(45deg, #111 0 14px, #333 14px 28px); color: #FFE08A; }
+
+  /* Mise en page principale : tailles calées sur la hauteur de l'écran pour tout voir sans défiler */
+  #app { display: flex; flex-direction: column; height: 100%; }
+  main {
+    flex: 1; min-height: 0; overflow-y: auto;
+    display: grid; gap: 3vw; padding: 2vh 3vw;
+    grid-template-columns: 1fr 1fr; align-items: center;
+  }
+  .zone-roue { display: flex; justify-content: center; align-items: center; }
+  .roue-cadre { position: relative; width: min(74vh, 44vw); aspect-ratio: 1; margin-top: 3vh; }
+  #roue {
+    width: 100%; height: 100%; display: block;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1.2vmin var(--noir), 0 2vmin 5vmin rgba(0,0,0,.25);
+    transform: rotate(0deg);
+    will-change: transform;
+  }
+  .pointeur {
+    position: absolute; left: 50%; top: -3.4vmin; transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 3vmin solid transparent; border-right: 3vmin solid transparent;
+    border-top: 5.6vmin solid var(--noir);
+    filter: drop-shadow(0 .6vmin .4vmin rgba(0,0,0,.35));
+    z-index: 2;
+  }
+  .moyeu {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    width: 22%; aspect-ratio: 1; border-radius: 50%;
+    background: var(--noir); color: var(--blanc);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: clamp(13px, 2.8vmin, 32px); letter-spacing: .04em;
+    border: .8vmin solid var(--blanc);
+  }
+
+  /* Panneau de jeu */
+  .panneau { display: flex; flex-direction: column; gap: 1.2vh; max-width: 640px; width: 100%; justify-self: center; }
+  .lot { font-size: clamp(20px, 4.2vh, 50px); }
+  .lot span { color: var(--rouge); }
+  .sous { font-size: clamp(14px, 2.1vh, 24px); color: var(--gris-texte); font-weight: 600; }
+  .chances {
+    align-self: flex-start;
+    background: var(--noir); color: var(--blanc); padding: .5vh 1.2vh;
+    font-weight: 900; text-transform: uppercase; font-size: clamp(14px, 2.4vh, 26px);
+  }
+  .saisie {
+    display: grid; gap: 1.2vh;
+    grid-template-columns: 1fr;
+    grid-template-areas: "label" "fiche" "clavier" "message" "bonus" "jouer";
+  }
+  .fiche-label { grid-area: label; font-weight: 900; text-transform: uppercase; font-size: clamp(15px, 2.4vh, 28px); }
+  .fiche-affichage { grid-area: fiche; display: flex; gap: 1.2vh; }
+  .fiche-affichage div {
+    flex: 1; height: clamp(56px, 8.4vh, 110px);
+    border: 4px solid var(--noir); border-radius: 1vh;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: clamp(36px, 6.6vh, 84px);
+  }
+  .fiche-affichage div.actif { border-color: var(--rouge); box-shadow: 0 0 0 3px var(--rouge); }
+  .clavier { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1vh; }
+  .saisie .clavier { grid-area: clavier; }
+  .clavier button {
+    height: clamp(48px, 6.6vh, 90px); border-radius: 1vh;
+    background: var(--gris); font-weight: 900; font-size: clamp(24px, 4vh, 48px);
+  }
+  .clavier button:active { background: #DDD; }
+  .clavier .efface { font-size: clamp(15px, 2.3vh, 26px); text-transform: uppercase; }
+  .btn-principal {
+    background: var(--rouge); color: var(--blanc);
+    border-radius: 1.2vh; min-height: clamp(60px, 8.6vh, 110px); padding: 0 2vh;
+    font-weight: 900; text-transform: uppercase; font-size: clamp(22px, 4vh, 50px); letter-spacing: .03em;
+  }
+  .saisie .btn-principal { grid-area: jouer; }
+  .btn-principal:active { background: var(--rouge-fonce); }
+  .btn-secondaire {
+    background: var(--noir); color: var(--blanc);
+    border-radius: 1.2vmin; min-height: clamp(52px, 7vh, 84px); padding: 0 2vmin;
+    font-weight: 900; text-transform: uppercase; font-size: clamp(15px, 2.6vh, 28px);
+  }
+  .btn-clair {
+    background: var(--gris); border-radius: 1.2vmin; min-height: clamp(52px, 7vmin, 80px); padding: 0 2vmin;
+    font-weight: 800; text-transform: uppercase; font-size: clamp(15px, 2.4vmin, 26px);
+  }
+  #message {
+    grid-area: message; min-height: 1.3em; font-weight: 800; font-size: clamp(15px, 2.4vh, 28px); color: var(--rouge);
+  }
+  #zone-bonus { grid-area: bonus; display: none; }
+  .mention { font-size: clamp(12px, 1.7vh, 18px); color: var(--gris-texte); }
+
+  /* Portrait : roue en haut, saisie en deux colonnes (fiche et bouton à gauche, clavier à droite) */
+  @media (orientation: portrait) {
+    main { grid-template-columns: 1fr; align-items: start; gap: 2vh; padding: 2vh 5vw; }
+    .roue-cadre { width: min(76vw, 34vh); margin-top: 2.6vh; }
+    .panneau { max-width: 900px; gap: 1vh; }
+    .lot { font-size: clamp(20px, 3.2vh, 46px); }
+    .sous { font-size: clamp(14px, 1.8vh, 22px); }
+    .chances { font-size: clamp(14px, 2vh, 24px); }
+    .saisie {
+      grid-template-columns: 1fr 1fr; column-gap: 3vw; align-items: start;
+      grid-template-areas: "label clavier" "fiche clavier" "message clavier" "bonus clavier" "jouer clavier";
+      grid-template-rows: auto auto auto auto 1fr;
+    }
+    .saisie .btn-principal { align-self: end; }
+    .clavier button { height: clamp(48px, 5.4vh, 84px); }
+    .fiche-affichage div { height: clamp(56px, 7.4vh, 100px); font-size: clamp(36px, 5.6vh, 76px); }
+    .btn-principal { font-size: clamp(18px, 2.6vh, 40px); }
+    main { gap: 1.4vh; padding: 1.4vh 5vw; }
+  }
+
+  /* Boutons discrets en coin */
+  .coin { position: fixed; bottom: 1.4vmin; z-index: 5; width: 7vmin; height: 7vmin; min-width: 48px; min-height: 48px;
+    border-radius: 50%; background: rgba(0,0,0,.06); color: #777; font-size: clamp(18px, 3vmin, 30px); }
+  #btn-vendeur { right: 1.4vmin; }
+  #btn-plein-ecran { left: 1.4vmin; }
+
+  /* Écrans superposés */
+  .ecran {
+    position: fixed; inset: 0; z-index: 10; display: none;
+    background: rgba(17,17,17,.92);
+    align-items: center; justify-content: center; padding: 3vmin;
+  }
+  .ecran.ouvert { display: flex; }
+  .carte {
+    background: var(--blanc); border-radius: 2vmin; padding: 4vmin;
+    width: min(760px, 100%); max-height: 100%; overflow-y: auto;
+    display: flex; flex-direction: column; gap: 2vmin;
+    -webkit-overflow-scrolling: touch;
+  }
+  .resultat-titre { font-size: clamp(44px, 10vmin, 120px); text-align: center; }
+  .gagne .resultat-titre { color: var(--rouge); }
+  .resultat-texte { text-align: center; font-size: clamp(18px, 3vmin, 32px); font-weight: 700; }
+  .bon {
+    border: .6vmin dashed var(--rouge); border-radius: 1.4vmin; padding: 2.4vmin; text-align: center;
+  }
+  .bon .num { font-size: clamp(40px, 8vmin, 96px); font-weight: 900; letter-spacing: .04em; }
+  .bon .details { font-size: clamp(15px, 2.3vmin, 24px); font-weight: 600; margin-top: .8vmin; }
+  .contact { border-top: 2px solid var(--gris); padding-top: 2vmin; display: flex; flex-direction: column; gap: 1.4vmin; }
+  .contact h3 { font-size: clamp(18px, 2.8vmin, 30px); }
+  .contact input[type=email], .contact input[type=tel], .champ {
+    width: 100%; font: inherit; font-size: clamp(18px, 2.8vmin, 30px); padding: 1.4vmin 1.8vmin;
+    border: 3px solid #CCC; border-radius: 1vmin; user-select: text; -webkit-user-select: text;
+  }
+  .contact input:focus, .champ:focus { outline: none; border-color: var(--noir); }
+  .case { display: flex; gap: 1.6vmin; align-items: flex-start; font-size: clamp(16px, 2.4vmin, 26px); font-weight: 600; cursor: pointer; }
+  .case input { width: clamp(28px, 4.4vmin, 48px); height: clamp(28px, 4.4vmin, 48px); flex: none; accent-color: var(--rouge); margin-top: .2vmin; }
+  #contact-retour { font-weight: 800; font-size: clamp(15px, 2.3vmin, 24px); min-height: 1.2em; }
+  .ligne-boutons { display: flex; gap: 1.4vmin; flex-wrap: wrap; }
+  .ligne-boutons > * { flex: 1; }
+
+  /* Code vendeur */
+  .code-points { display: flex; justify-content: center; gap: 2vmin; margin: 1vmin 0; }
+  .code-points span { width: 3.4vmin; height: 3.4vmin; min-width: 20px; min-height: 20px; border-radius: 50%; border: 3px solid var(--noir); }
+  .code-points span.plein { background: var(--noir); }
+
+  /* Espace vendeur */
+  #ecran-vendeur .carte { width: min(1100px, 100%); height: 100%; }
+  .vendeur-entete { display: flex; justify-content: space-between; align-items: center; gap: 2vmin; flex-wrap: wrap; }
+  .vendeur-entete h2 { font-size: clamp(22px, 4vmin, 40px); }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1.4vmin; }
+  .stat { background: var(--gris); border-radius: 1.2vmin; padding: 1.6vmin; }
+  .stat b { display: block; font-size: clamp(26px, 4.6vmin, 48px); font-weight: 900; }
+  .stat span { font-size: clamp(13px, 1.9vmin, 18px); font-weight: 700; color: var(--gris-texte); text-transform: uppercase; }
+  .bloc { border: 2px solid var(--gris); border-radius: 1.2vmin; padding: 2vmin; display: flex; flex-direction: column; gap: 1.2vmin; }
+  .bloc h3 { font-size: clamp(17px, 2.6vmin, 26px); font-weight: 900; text-transform: uppercase; }
+  .bloc p { font-size: clamp(14px, 2vmin, 20px); }
+  .ligne-saisie { display: flex; gap: 1.2vmin; flex-wrap: wrap; }
+  .ligne-saisie .champ { flex: 1; min-width: 140px; }
+  .retour { font-weight: 800; font-size: clamp(14px, 2vmin, 20px); min-height: 1.2em; }
+  .ok { color: var(--vert); }
+  .ko { color: var(--rouge); }
+  .table-parties { width: 100%; border-collapse: collapse; font-size: clamp(13px, 1.8vmin, 18px); }
+  .table-parties th, .table-parties td { text-align: left; padding: .8vmin 1vmin; border-bottom: 1px solid #E3E3E3; white-space: nowrap; }
+  .table-parties th { position: sticky; top: 0; background: var(--blanc); font-weight: 900; text-transform: uppercase; }
+  .scroll-table { max-height: 40vh; overflow: auto; -webkit-overflow-scrolling: touch; }
+  .interrupteur { display: flex; align-items: center; gap: 1.4vmin; font-weight: 800; font-size: clamp(16px, 2.4vmin, 24px); }
+  .interrupteur input { width: clamp(28px, 4.4vmin, 44px); height: clamp(28px, 4.4vmin, 44px); accent-color: var(--rouge); }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="alerte-memoire">Mémoire indisponible : les parties ne sont pas enregistrées. Quittez la navigation privée et rechargez la page.</div>
+  <div id="bandeau-test">MODE TEST : AUCUNE PARTIE N'EST ENREGISTRÉE</div>
+  <div id="bandeau">Jeu du samedi 5 au samedi 12 décembre 2026</div>
+
+  <main>
+    <div class="zone-roue">
+      <div class="roue-cadre">
+        <div class="pointeur" aria-hidden="true"></div>
+        <svg id="roue" viewBox="-100 -100 200 200" role="img" aria-label="Roulette COVER, 12 cases dont 3 gagnantes"></svg>
+        <div class="moyeu">COVER</div>
+      </div>
+    </div>
+
+    <section class="panneau">
+      <div class="lot titre">Gagnez une doudoune <span>Calvin Klein</span></div>
+      <div class="sous">Valeur 200 €, tirage au sort le dimanche 13 décembre. Et tout de suite, tentez un bon de 5 % à la roulette.</div>
+      <div class="chances">3 chances sur 12 de gagner -5 %</div>
+
+      <div class="saisie">
+      <div class="fiche-label">Numéro de fiche</div>
+      <div class="fiche-affichage" id="fiche-affichage"><div></div><div></div><div></div></div>
+      <div class="clavier" id="clavier">
+        <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+        <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+        <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+        <button data-k="C" class="efface">Effacer</button><button data-k="0">0</button><button data-k="B" class="efface">⌫</button>
+      </div>
+      <div id="message" role="status"></div>
+      <div id="zone-bonus"><button class="btn-secondaire" id="btn-bonus" style="width:100%">Tour bonus : code vendeur</button></div>
+      <button class="btn-principal" id="btn-jouer">Lancer la roue</button>
+      </div>
+      <div class="mention">Jeu gratuit et sans obligation d'achat, réservé aux personnes majeures. Règlement disponible en caisse.</div>
+    </section>
+  </main>
+</div>
+
+<button class="coin" id="btn-plein-ecran" aria-label="Plein écran">⛶</button>
+<button class="coin" id="btn-vendeur" aria-label="Espace vendeur">⚙</button>
+
+<!-- Résultat -->
+<div class="ecran" id="ecran-resultat">
+  <div class="carte" id="carte-resultat">
+    <div class="resultat-titre titre" id="res-titre"></div>
+    <div class="resultat-texte" id="res-texte"></div>
+    <div class="bon" id="res-bon">
+      <div class="titre" style="font-size:clamp(16px,2.6vmin,28px)">Votre bon de réduction</div>
+      <div class="num" id="res-bon-num"></div>
+      <div class="details" id="res-bon-details"></div>
+    </div>
+    <div class="resultat-texte" style="font-size:clamp(15px,2.3vmin,24px);font-weight:600">Votre fiche reste dans l'urne pour le tirage de la doudoune le dimanche 13 décembre.</div>
+
+    <div class="contact" id="bloc-contact">
+      <h3 class="titre">Restons en contact (facultatif)</h3>
+      <input type="email" id="c-email" placeholder="Votre e-mail" autocomplete="email" inputmode="email">
+      <input type="tel" id="c-tel" placeholder="Votre téléphone" autocomplete="tel" inputmode="tel">
+      <label class="case"><input type="checkbox" id="c-consent"><span id="c-consent-texte">J'accepte de recevoir les offres et nouveautés de COVER par e-mail et SMS</span></label>
+      <div class="mention">Facultatif : cela ne change rien à votre participation. Vous pouvez vous désinscrire à tout moment.</div>
+      <button class="btn-clair" id="btn-contact">Valider mes coordonnées</button>
+      <div id="contact-retour"></div>
+    </div>
+
+    <button class="btn-principal" id="btn-suivant">Joueur suivant</button>
+  </div>
+</div>
+
+<!-- Code vendeur -->
+<div class="ecran" id="ecran-code">
+  <div class="carte" style="width:min(480px,100%)">
+    <div class="titre" style="font-size:clamp(20px,3.4vmin,36px);text-align:center" id="code-titre">Code vendeur</div>
+    <div class="mention" style="text-align:center" id="code-sous"></div>
+    <div class="code-points" id="code-points"></div>
+    <div class="clavier" id="clavier-code">
+      <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+      <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+      <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+      <button data-k="X" class="efface">Annuler</button><button data-k="0">0</button><button data-k="OK" class="efface">OK</button>
+    </div>
+    <div class="retour ko" id="code-retour" style="text-align:center"></div>
+  </div>
+</div>
+
+<!-- Espace vendeur -->
+<div class="ecran" id="ecran-vendeur">
+  <div class="carte">
+    <div class="vendeur-entete">
+      <h2 class="titre">Espace vendeur</h2>
+      <button class="btn-secondaire" id="btn-fermer-vendeur">Fermer</button>
+    </div>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="bloc">
+      <h3>Tour bonus</h3>
+      <p>Vérifiez sur le téléphone du client la story Instagram ou la publication TikTok qui cite le compte COVER, puis débloquez le tour. Une seule fois par fiche.</p>
+      <div class="ligne-saisie">
+        <input class="champ" id="v-fiche-bonus" inputmode="numeric" maxlength="3" placeholder="N° de fiche (ex. 042)">
+        <button class="btn-secondaire" id="v-btn-bonus">Débloquer</button>
+      </div>
+      <div class="retour" id="v-retour-bonus"></div>
+    </div>
+
+    <div class="bloc">
+      <h3>Mode test</h3>
+      <label class="interrupteur"><input type="checkbox" id="v-test"> Mode test (rien n'est enregistré, pas de contrôle des dates ni des fiches)</label>
+      <div class="ligne-boutons">
+        <button class="btn-clair" id="v-btn-simu">Simuler 100 000 tirages</button>
+      </div>
+      <div class="retour" id="v-retour-simu"></div>
+    </div>
+
+    <div class="bloc">
+      <h3>Parties</h3>
+      <div class="ligne-boutons">
+        <button class="btn-secondaire" id="v-btn-csv">Exporter en CSV</button>
+        <button class="btn-clair" id="v-btn-effacer" style="color:var(--rouge)">Tout effacer</button>
+      </div>
+      <div class="retour" id="v-retour-parties"></div>
+      <div class="scroll-table">
+        <table class="table-parties">
+          <thead><tr><th>N</th><th>Date</th><th>Heure</th><th>Fiche</th><th>Tour</th><th>Résultat</th><th>Bon</th><th>Contact</th></tr></thead>
+          <tbody id="v-liste"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="bloc">
+      <h3>Changer le code vendeur</h3>
+      <div class="ligne-saisie">
+        <input class="champ" id="v-code1" type="password" inputmode="numeric" maxlength="8" placeholder="Nouveau code (4 à 8 chiffres)">
+        <input class="champ" id="v-code2" type="password" inputmode="numeric" maxlength="8" placeholder="Confirmer">
+        <button class="btn-secondaire" id="v-btn-code">Enregistrer</button>
+      </div>
+      <div class="retour" id="v-retour-code"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- Paramètres du jeu ---------- */
+  var NB_CASES = 12;
+  var CASES_GAGNANTES = [0, 4, 8];               // 3 cases sur 12, réparties sur la roue
+  var DEBUT = new Date(2026, 11, 5, 0, 0, 0);      // samedi 5 décembre 2026, 0 h
+  var FIN = new Date(2026, 11, 12, 23, 59, 59);    // samedi 12 décembre 2026, 23 h 59
+  var DUREE_ANIM = 5000;
+  var VALIDITE_JOURS = 7;                          // jour de la partie compris
+  var FICHE_MIN = 1, FICHE_MAX = 300;
+  var CLE = 'cover_roulette_dec2026';
+  var TEXTE_CONSENTEMENT = "J'accepte de recevoir les offres et nouveautés de COVER par e-mail et SMS";
+  var ORIGINE = 'roulette COVER décembre 2026';
+
+  /* ---------- Tirage sans biais ---------- */
+  // Rejet des valeurs au-delà du plus grand multiple de n pour que chaque case ait exactement la même chance.
+  function tirerEntier(n) {
+    var limite = Math.floor(0x100000000 / n) * n;
+    var buf = new Uint32Array(1);
+    do { crypto.getRandomValues(buf); } while (buf[0] >= limite);
+    return buf[0] % n;
+  }
+  function estGagnante(i) { return CASES_GAGNANTES.indexOf(i) !== -1; }
+
+  /* ---------- Stockage ---------- */
+  var memoireOk = true;
+  function etatVide() {
+    return { version: 1, code: '1234', parties: [], bonus: {}, prochainN: 1, prochainBon: 1 };
+  }
+  function charger() {
+    try {
+      var t = '__test_cover__';
+      localStorage.setItem(t, '1'); localStorage.removeItem(t);
+      var brut = localStorage.getItem(CLE);
+      if (!brut) return etatVide();
+      var e = JSON.parse(brut);
+      var base = etatVide();
+      for (var k in base) if (!(k in e)) e[k] = base[k];
+      return e;
+    } catch (err) {
+      memoireOk = false;
+      return etatVide();
+    }
+  }
+  function sauver() {
+    try {
+      localStorage.setItem(CLE, JSON.stringify(etat));
+      memoireOk = true;
+    } catch (err) {
+      memoireOk = false;
+    }
+    document.getElementById('alerte-memoire').style.display = memoireOk ? 'none' : 'block';
+    return memoireOk;
+  }
+  var etat = charger();
+  if (!memoireOk) document.getElementById('alerte-memoire').style.display = 'block';
+  var modeTest = false;
+
+  /* ---------- Dates ---------- */
+  function pad(n, l) { n = String(n); while (n.length < (l || 2)) n = '0' + n; return n; }
+  function dateFr(d) { return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear(); }
+  function heureFr(d) { return pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()); }
+  function dateLongue(d) {
+    return d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  }
+  function finValidite(d) {
+    var f = new Date(d.getFullYear(), d.getMonth(), d.getDate() + VALIDITE_JOURS - 1);
+    return f;
+  }
+  function periode() {
+    var now = new Date();
+    if (now < DEBUT) return 'avant';
+    if (now > FIN) return 'apres';
+    return 'actif';
+  }
+  function majBandeau() {
+    var b = document.getElementById('bandeau');
+    var p = periode();
+    b.classList.toggle('ferme', p !== 'actif');
+    if (p === 'actif') b.textContent = 'Jeu du samedi 5 au samedi 12 décembre 2026 · Tirage le dimanche 13 décembre';
+    else if (p === 'avant') b.textContent = 'Le jeu commence le samedi 5 décembre 2026';
+    else b.textContent = 'Le jeu est terminé · Tirage au sort le dimanche 13 décembre 2026';
+    document.getElementById('bandeau-test').style.display = modeTest ? 'block' : 'none';
+    majBoutonJouer();
+  }
+
+  /* ---------- Dessin de la roue ---------- */
+  var svgNS = 'http://www.w3.org/2000/svg';
+  var roue = document.getElementById('roue');
+  function point(angleDeg, r) {
+    var a = (angleDeg - 90) * Math.PI / 180;   // 0° = en haut, sens horaire
+    return [r * Math.cos(a), r * Math.sin(a)];
+  }
+  function dessinerRoue() {
+    var pas = 360 / NB_CASES;
+    var perdante = 0;
+    for (var i = 0; i < NB_CASES; i++) {
+      var a0 = i * pas, a1 = (i + 1) * pas;
+      var p0 = point(a0, 100), p1 = point(a1, 100);
+      var g = estGagnante(i);
+      var fond, texte;
+      if (g) { fond = '#C8102E'; texte = '#FFFFFF'; }
+      else { fond = (perdante++ % 2 === 0) ? '#FFFFFF' : '#111111'; texte = fond === '#FFFFFF' ? '#111111' : '#FFFFFF'; }
+      var path = document.createElementNS(svgNS, 'path');
+      path.setAttribute('d', 'M0,0 L' + p0[0] + ',' + p0[1] + ' A100,100 0 0,1 ' + p1[0] + ',' + p1[1] + ' Z');
+      path.setAttribute('fill', fond);
+      path.setAttribute('stroke', '#111111');
+      path.setAttribute('stroke-width', '0.8');
+      roue.appendChild(path);
+
+      // texte posé le long du rayon, lu du centre vers le bord
+      var t = document.createElementNS(svgNS, 'text');
+      var milieu = a0 + pas / 2;
+      t.setAttribute('transform', 'rotate(' + milieu + ') translate(0,' + (g ? -62 : -60) + ') rotate(-90)');
+      t.setAttribute('text-anchor', 'middle');
+      t.setAttribute('dominant-baseline', 'middle');
+      t.setAttribute('fill', texte);
+      t.setAttribute('font-family', 'Helvetica Neue, Arial, sans-serif');
+      t.setAttribute('font-weight', '900');
+      t.setAttribute('font-size', g ? '15' : '8.4');
+      t.textContent = g ? '-5 %' : 'DOMMAGE';
+      roue.appendChild(t);
+    }
+  }
+  dessinerRoue();
+
+  /* ---------- Rotation ---------- */
+  var rotationActuelle = 0;
+  // Rotation finale (en degrés, sens horaire) pour que le centre de la case `i`, décalé de `jitter`, arrive sous le pointeur.
+  function rotationPour(i, depuis, jitter) {
+    var pas = 360 / NB_CASES;
+    var cible = ((360 - (i * pas + pas / 2 + jitter)) % 360 + 360) % 360;
+    var base = depuis - (((depuis % 360) + 360) % 360);
+    var r = base + 360 * 6 + cible;
+    if (r - depuis < 360 * 5) r += 360;
+    return r;
+  }
+  function caseSousPointeur(rotation) {
+    var pas = 360 / NB_CASES;
+    var angle = ((-rotation % 360) + 360) % 360;
+    return Math.floor(angle / pas) % NB_CASES;
+  }
+
+  /* ---------- Saisie de la fiche ---------- */
+  var saisie = '';
+  var enCours = false;
+  var ficheBonusAutorisee = null;   // fiche dont le tour bonus vient d'être débloqué par le vendeur
+  function majAffichageFiche() {
+    var cases = document.querySelectorAll('#fiche-affichage div');
+    for (var i = 0; i < 3; i++) {
+      cases[i].textContent = saisie[i] || '';
+      cases[i].classList.toggle('actif', i === saisie.length);
+    }
+    majBoutonJouer();
+  }
+  function setMessage(txt, ok) {
+    var m = document.getElementById('message');
+    m.textContent = txt || '';
+    m.style.color = ok ? 'var(--vert)' : 'var(--rouge)';
+  }
+  function majBoutonJouer() {
+    var b = document.getElementById('btn-jouer');
+    b.disabled = enCours || saisie.length !== 3 || (!modeTest && periode() !== 'actif');
+  }
+  function partiesDe(fiche) {
+    return etat.parties.filter(function (p) { return p.fiche === fiche; });
+  }
+  // Renvoie {ok, tour, raison}
+  function verifierFiche(fiche) {
+    var n = parseInt(fiche, 10);
+    if (isNaN(n) || n < FICHE_MIN || n > FICHE_MAX) return { ok: false, raison: 'Numéro invalide : les fiches vont de 001 à 300.' };
+    if (modeTest) return { ok: true, tour: 1 };
+    var nb = partiesDe(fiche).length;
+    if (nb === 0) return { ok: true, tour: 1 };
+    if (nb === 1 && etat.bonus[fiche] && !etat.bonus[fiche].utilise) return { ok: true, tour: 2 };
+    if (nb === 1 && !etat.bonus[fiche]) return { ok: false, raison: 'La fiche ' + fiche + ' a déjà joué.', bonusPossible: true };
+    return { ok: false, raison: 'La fiche ' + fiche + ' a déjà utilisé ses 2 tours.' };
+  }
+  document.getElementById('clavier').addEventListener('click', function (ev) {
+    var k = ev.target.getAttribute('data-k');
+    if (!k || enCours) return;
+    if (k === 'C') saisie = '';
+    else if (k === 'B') saisie = saisie.slice(0, -1);
+    else if (saisie.length < 3) saisie += k;
+    setMessage('');
+    document.getElementById('zone-bonus').style.display = 'none';
+    majAffichageFiche();
+  });
+  document.addEventListener('keydown', function (ev) {
+    if (document.querySelector('.ecran.ouvert') || enCours) return;
+    if (/^[0-9]$/.test(ev.key) && saisie.length < 3) saisie += ev.key;
+    else if (ev.key === 'Backspace') saisie = saisie.slice(0, -1);
+    else if (ev.key === 'Enter') { lancer(); return; }
+    else return;
+    setMessage('');
+    majAffichageFiche();
+  });
+
+  /* ---------- Partie ---------- */
+  var partieCourante = null;
+  function lancer() {
+    if (enCours || saisie.length !== 3) return;
+    if (!modeTest && periode() !== 'actif') { setMessage('Le jeu est ouvert du 5 au 12 décembre 2026.'); return; }
+    var fiche = saisie;
+    var v = verifierFiche(fiche);
+    if (!v.ok) {
+      setMessage(v.raison);
+      document.getElementById('zone-bonus').style.display = v.bonusPossible ? 'block' : 'none';
+      return;
+    }
+    // Le résultat est tiré avant l'animation.
+    var index = tirerEntier(NB_CASES);
+    var gagne = estGagnante(index);
+    var maintenant = new Date();
+    var partie = {
+      n: modeTest ? 0 : etat.prochainN,
+      ts: maintenant.toISOString(),
+      date: dateFr(maintenant),
+      heure: heureFr(maintenant),
+      fiche: fiche,
+      tour: v.tour,
+      case: index,
+      resultat: gagne ? 'gagné' : 'perdu',
+      bon: '',
+      validite: '',
+      email: '', telephone: '', consentement: false, consentementDate: '', consentementTexte: '', origine: ''
+    };
+    if (gagne) {
+      var numBon = modeTest ? 'TEST' : 'B-' + pad(etat.prochainBon, 3);
+      partie.bon = numBon;
+      partie.validite = dateFr(finValidite(maintenant));
+    }
+    if (!modeTest) {
+      etat.prochainN++;
+      if (gagne) etat.prochainBon++;
+      etat.parties.push(partie);
+      if (v.tour === 2 && etat.bonus[fiche]) etat.bonus[fiche].utilise = true;
+      sauver();   // enregistré avant l'animation : recharger la page ne permet pas de rejouer
+    }
+    partieCourante = partie;
+
+    enCours = true;
+    majBoutonJouer();
+    setMessage('');
+    document.getElementById('zone-bonus').style.display = 'none';
+
+    var jitter = (tirerEntier(1000) / 1000 - 0.5) * 18;   // reste dans la case (±9° sur 30°)
+    var cible = rotationPour(index, rotationActuelle, jitter);
+    roue.style.transition = 'transform ' + DUREE_ANIM + 'ms cubic-bezier(0.12, 0.6, 0.1, 1)';
+    // double rAF pour que la transition parte bien de la position actuelle
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () { roue.style.transform = 'rotate(' + cible + 'deg)'; });
+    });
+    var fini = false;
+    function finAnimation() {
+      if (fini) return;
+      fini = true;
+      roue.removeEventListener('transitionend', finAnimation);
+      rotationActuelle = cible;
+      if (caseSousPointeur(cible) !== index) console.error('Écart roue / tirage', index, caseSousPointeur(cible));
+      enCours = false;
+      afficherResultat(partie);
+    }
+    roue.addEventListener('transitionend', finAnimation);
+    setTimeout(finAnimation, DUREE_ANIM + 400);
+  }
+  document.getElementById('btn-jouer').addEventListener('click', lancer);
+
+  var minuterieResultat = null;
+  function afficherResultat(p) {
+    var carte = document.getElementById('carte-resultat');
+    var gagne = p.resultat === 'gagné';
+    carte.classList.toggle('gagne', gagne);
+    document.getElementById('res-titre').textContent = gagne ? 'Gagné !' : 'Dommage !';
+    document.getElementById('res-texte').textContent = gagne
+      ? 'Vous remportez un bon de 5 % de réduction.'
+      : "Pas de bon cette fois. Merci d'avoir joué !";
+    document.getElementById('res-bon').style.display = gagne ? 'block' : 'none';
+    if (gagne) {
+      document.getElementById('res-bon-num').textContent = p.bon;
+      document.getElementById('res-bon-details').textContent =
+        'Valable jusqu\'au ' + p.validite + ' inclus, en un seul passage en caisse, non cumulable. Le vendeur vous remet votre bon papier n° ' + p.bon + '.' +
+        (modeTest ? ' (partie de test)' : '');
+    }
+    document.getElementById('c-email').value = '';
+    document.getElementById('c-tel').value = '';
+    document.getElementById('c-consent').checked = false;
+    document.getElementById('contact-retour').textContent = '';
+    document.getElementById('btn-contact').disabled = false;
+    document.getElementById('ecran-resultat').classList.add('ouvert');
+    document.getElementById('carte-resultat').scrollTop = 0;
+    clearTimeout(minuterieResultat);
+    minuterieResultat = setTimeout(joueurSuivant, 3 * 60 * 1000);   // retour automatique après 3 minutes
+  }
+
+  function emailValide(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e); }
+  function telValide(t) { return t.replace(/[^\d]/g, '').length >= 9; }
+  // Renvoie true si les coordonnées sont enregistrées (ou rien à enregistrer)
+  function enregistrerContact(silencieux) {
+    var retour = document.getElementById('contact-retour');
+    var email = document.getElementById('c-email').value.trim();
+    var tel = document.getElementById('c-tel').value.trim();
+    var consent = document.getElementById('c-consent').checked;
+    if (!email && !tel) { if (!silencieux) { retour.className = 'ko'; retour.textContent = 'Indiquez un e-mail ou un téléphone.'; } return false; }
+    if (!consent) { if (!silencieux) { retour.className = 'ko'; retour.textContent = 'Cochez la case pour que nous puissions vous écrire.'; } return false; }
+    if (email && !emailValide(email)) { if (!silencieux) { retour.className = 'ko'; retour.textContent = "L'e-mail semble incomplet."; } return false; }
+    if (tel && !telValide(tel)) { if (!silencieux) { retour.className = 'ko'; retour.textContent = 'Le numéro de téléphone semble incomplet.'; } return false; }
+    var p = partieCourante;
+    if (!p) return false;
+    p.email = email;
+    p.telephone = tel;
+    p.consentement = true;
+    p.consentementDate = new Date().toISOString();
+    p.consentementTexte = document.getElementById('c-consent-texte').textContent;
+    p.origine = ORIGINE;
+    if (!modeTest) sauver();
+    retour.className = 'ok';
+    retour.textContent = modeTest ? 'Mode test : coordonnées non enregistrées.' : 'Merci, c\'est noté !';
+    document.getElementById('btn-contact').disabled = true;
+    return true;
+  }
+  document.getElementById('btn-contact').addEventListener('click', function () { enregistrerContact(false); });
+
+  function joueurSuivant() {
+    clearTimeout(minuterieResultat);
+    // Si la personne a rempli et coché sans valider, on enregistre. Sans case cochée, rien n'est conservé.
+    if (!document.getElementById('btn-contact').disabled) enregistrerContact(true);
+    document.getElementById('c-email').value = '';
+    document.getElementById('c-tel').value = '';
+    document.getElementById('c-consent').checked = false;
+    document.getElementById('ecran-resultat').classList.remove('ouvert');
+    partieCourante = null;
+    saisie = '';
+    setMessage('');
+    majAffichageFiche();
+  }
+  document.getElementById('btn-suivant').addEventListener('click', joueurSuivant);
+
+  /* ---------- Code vendeur ---------- */
+  var codeSaisi = '';
+  var apresCode = null;
+  function ouvrirCode(titre, sous, suite) {
+    codeSaisi = '';
+    apresCode = suite;
+    document.getElementById('code-titre').textContent = titre;
+    document.getElementById('code-sous').textContent = sous || '';
+    document.getElementById('code-retour').textContent = '';
+    majPointsCode();
+    document.getElementById('ecran-code').classList.add('ouvert');
+  }
+  function majPointsCode() {
+    var n = Math.max(4, String(etat.code).length);
+    var h = '';
+    for (var i = 0; i < n; i++) h += '<span class="' + (i < codeSaisi.length ? 'plein' : '') + '"></span>';
+    document.getElementById('code-points').innerHTML = h;
+  }
+  function validerCode() {
+    if (codeSaisi === String(etat.code)) {
+      document.getElementById('ecran-code').classList.remove('ouvert');
+      var s = apresCode; apresCode = null;
+      if (s) s();
+    } else {
+      codeSaisi = '';
+      majPointsCode();
+      document.getElementById('code-retour').textContent = 'Code incorrect.';
+    }
+  }
+  document.getElementById('clavier-code').addEventListener('click', function (ev) {
+    var k = ev.target.getAttribute('data-k');
+    if (!k) return;
+    if (k === 'X') { document.getElementById('ecran-code').classList.remove('ouvert'); apresCode = null; return; }
+    if (k === 'OK') { validerCode(); return; }
+    if (codeSaisi.length < 8) codeSaisi += k;
+    document.getElementById('code-retour').textContent = '';
+    majPointsCode();
+    if (codeSaisi.length === String(etat.code).length) validerCode();
+  });
+
+  /* ---------- Tour bonus ---------- */
+  function debloquerBonus(fiche) {
+    var n = parseInt(fiche, 10);
+    if (isNaN(n) || n < FICHE_MIN || n > FICHE_MAX) return { ok: false, txt: 'Numéro de fiche invalide.' };
+    fiche = pad(n, 3);
+    var nb = partiesDe(fiche).length;
+    if (nb === 0) return { ok: false, txt: 'La fiche ' + fiche + " n'a pas encore joué son premier tour." };
+    if (etat.bonus[fiche]) return { ok: false, txt: 'La fiche ' + fiche + ' a déjà eu son tour bonus.' };
+    if (nb >= 2) return { ok: false, txt: 'La fiche ' + fiche + ' a déjà joué 2 tours.' };
+    etat.bonus[fiche] = { ts: new Date().toISOString(), utilise: false };
+    if (!sauver()) return { ok: false, txt: 'Mémoire indisponible : déblocage non enregistré.' };
+    return { ok: true, txt: 'Tour bonus débloqué pour la fiche ' + fiche + '.', fiche: fiche };
+  }
+  document.getElementById('btn-bonus').addEventListener('click', function () {
+    var fiche = saisie;
+    ouvrirCode('Tour bonus', 'Fiche ' + fiche + ' : vérifiez la story ou la publication qui cite COVER, puis tapez votre code.', function () {
+      var r = debloquerBonus(fiche);
+      document.getElementById('zone-bonus').style.display = 'none';
+      setMessage(r.txt + (r.ok ? ' Appuyez sur « Lancer la roue ».' : ''), r.ok);
+    });
+  });
+
+  /* ---------- Espace vendeur ---------- */
+  function ouvrirVendeur() {
+    document.getElementById('v-test').checked = modeTest;
+    ['v-retour-bonus', 'v-retour-simu', 'v-retour-parties', 'v-retour-code'].forEach(function (id) {
+      document.getElementById(id).textContent = '';
+    });
+    majVendeur();
+    document.getElementById('ecran-vendeur').classList.add('ouvert');
+  }
+  function echap(s) {
+    return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; });
+  }
+  function majVendeur() {
+    var parties = etat.parties;
+    var gagnees = parties.filter(function (p) { return p.resultat === 'gagné'; }).length;
+    var fiches = {};
+    parties.forEach(function (p) { fiches[p.fiche] = 1; });
+    var bonusUtilises = parties.filter(function (p) { return p.tour === 2; }).length;
+    var contacts = parties.filter(function (p) { return p.consentement; }).length;
+    var taux = parties.length ? (100 * gagnees / parties.length).toFixed(1).replace('.', ',') + ' %' : '0 %';
+    var stats = [
+      [parties.length, 'Parties'],
+      [Object.keys(fiches).length, 'Fiches jouées'],
+      [gagnees, 'Bons émis'],
+      [taux, 'Taux de gain'],
+      [bonusUtilises, 'Tours bonus joués'],
+      [contacts, 'Contacts avec accord']
+    ];
+    document.getElementById('stats').innerHTML = stats.map(function (s) {
+      return '<div class="stat"><b>' + s[0] + '</b><span>' + s[1] + '</span></div>';
+    }).join('');
+    var lignes = parties.slice().reverse().map(function (p) {
+      return '<tr><td>' + p.n + '</td><td>' + p.date + '</td><td>' + p.heure + '</td><td>' + p.fiche + '</td><td>' + p.tour +
+        '</td><td>' + (p.resultat === 'gagné' ? '<b style="color:var(--rouge)">Gagné</b>' : 'Perdu') + '</td><td>' + echap(p.bon) +
+        '</td><td>' + (p.consentement ? 'Oui' : '') + '</td></tr>';
+    });
+    document.getElementById('v-liste').innerHTML = lignes.length ? lignes.join('') : '<tr><td colspan="8">Aucune partie pour l\'instant.</td></tr>';
+  }
+  document.getElementById('btn-vendeur').addEventListener('click', function () {
+    if (enCours) return;
+    ouvrirCode('Code vendeur', 'Accès réservé à l\'équipe COVER.', ouvrirVendeur);
+  });
+  document.getElementById('btn-fermer-vendeur').addEventListener('click', function () {
+    document.getElementById('ecran-vendeur').classList.remove('ouvert');
+    majBandeau();
+  });
+  document.getElementById('v-btn-bonus').addEventListener('click', function () {
+    var champ = document.getElementById('v-fiche-bonus');
+    var r = debloquerBonus(champ.value.trim());
+    var el = document.getElementById('v-retour-bonus');
+    el.className = 'retour ' + (r.ok ? 'ok' : 'ko');
+    el.textContent = r.txt;
+    if (r.ok) champ.value = '';
+  });
+  document.getElementById('v-test').addEventListener('change', function (ev) {
+    modeTest = ev.target.checked;
+    majBandeau();
+  });
+
+  function simuler(n) {
+    var g = 0;
+    for (var i = 0; i < n; i++) if (estGagnante(tirerEntier(NB_CASES))) g++;
+    return g / n;
+  }
+  document.getElementById('v-btn-simu').addEventListener('click', function () {
+    var el = document.getElementById('v-retour-simu');
+    var t0 = performance.now();
+    var prop = simuler(100000);
+    var ok = Math.abs(prop - 0.25) <= 0.01;
+    el.className = 'retour ' + (ok ? 'ok' : 'ko');
+    el.textContent = '100 000 tirages : ' + (prop * 100).toFixed(2).replace('.', ',') + ' % de cases gagnantes (attendu 25 % ± 1 point) : ' +
+      (ok ? 'conforme' : 'NON CONFORME') + ' (' + Math.round(performance.now() - t0) + ' ms).';
+  });
+
+  function champCsv(v) {
+    v = v === undefined || v === null ? '' : String(v);
+    if (/[";\r\n]/.test(v)) v = '"' + v.replace(/"/g, '""') + '"';
+    return v;
+  }
+  function exporterCsv() {
+    var entetes = ['n', 'date', 'heure', 'fiche', 'tour', 'résultat', 'bon', 'e-mail', 'téléphone', 'consentement', 'date du consentement', 'texte du consentement', 'origine'];
+    var lignes = [entetes.join(';')];
+    etat.parties.forEach(function (p) {
+      var dc = p.consentementDate ? new Date(p.consentementDate) : null;
+      lignes.push([
+        p.n, p.date, p.heure, p.fiche, p.tour, p.resultat, p.bon,
+        p.email, p.telephone, p.consentement ? 'oui' : 'non',
+        dc ? dateFr(dc) + ' ' + heureFr(dc) : '',
+        p.consentementTexte, p.origine
+      ].map(champCsv).join(';'));
+    });
+    var contenu = '﻿' + lignes.join('\r\n');
+    var blob = new Blob([contenu], { type: 'text/csv;charset=utf-8' });
+    var a = document.createElement('a');
+    var d = new Date();
+    a.href = URL.createObjectURL(blob);
+    a.download = 'roulette-cover-' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '-' + pad(d.getHours()) + pad(d.getMinutes()) + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
+    var el = document.getElementById('v-retour-parties');
+    el.className = 'retour ok';
+    el.textContent = etat.parties.length + ' partie(s) exportée(s).';
+  }
+  document.getElementById('v-btn-csv').addEventListener('click', exporterCsv);
+
+  document.getElementById('v-btn-effacer').addEventListener('click', function () {
+    var el = document.getElementById('v-retour-parties');
+    if (!confirm('Effacer toutes les parties, les bons et les coordonnées ? Pensez à exporter le CSV avant.')) return;
+    var mot = prompt('Pour confirmer, tapez EFFACER');
+    if (mot === null || mot.trim().toUpperCase() !== 'EFFACER') { el.className = 'retour ko'; el.textContent = 'Effacement annulé.'; return; }
+    var code = etat.code;
+    etat = etatVide();
+    etat.code = code;
+    sauver();
+    el.className = 'retour ok';
+    el.textContent = 'Toutes les données ont été effacées.';
+    majVendeur();
+  });
+
+  document.getElementById('v-btn-code').addEventListener('click', function () {
+    var c1 = document.getElementById('v-code1').value.trim();
+    var c2 = document.getElementById('v-code2').value.trim();
+    var el = document.getElementById('v-retour-code');
+    if (!/^\d{4,8}$/.test(c1)) { el.className = 'retour ko'; el.textContent = 'Le code doit faire 4 à 8 chiffres.'; return; }
+    if (c1 !== c2) { el.className = 'retour ko'; el.textContent = 'Les deux codes ne sont pas identiques.'; return; }
+    etat.code = c1;
+    if (!sauver()) { el.className = 'retour ko'; el.textContent = 'Mémoire indisponible : code non enregistré.'; return; }
+    document.getElementById('v-code1').value = '';
+    document.getElementById('v-code2').value = '';
+    el.className = 'retour ok';
+    el.textContent = 'Nouveau code enregistré.';
+  });
+
+  /* ---------- Plein écran et veille ---------- */
+  document.getElementById('btn-plein-ecran').addEventListener('click', function () {
+    var d = document.documentElement;
+    var fs = document.fullscreenElement || document.webkitFullscreenElement;
+    try {
+      if (fs) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else (d.requestFullscreen || d.webkitRequestFullscreen).call(d);
+    } catch (e) { /* plein écran non disponible : on ajoute la page à l'écran d'accueil à la place */ }
+    demanderWakeLock();
+  });
+  var verrou = null;
+  function demanderWakeLock() {
+    if (!('wakeLock' in navigator) || verrou) return;
+    navigator.wakeLock.request('screen').then(function (v) {
+      verrou = v;
+      v.addEventListener('release', function () { verrou = null; });
+    }).catch(function () { /* refusé ou indisponible */ });
+  }
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible') demanderWakeLock();
+  });
+  // Certains navigateurs n'acceptent le verrou qu'après un geste : on retente au premier toucher.
+  document.addEventListener('pointerdown', demanderWakeLock, { passive: true });
+  demanderWakeLock();
+
+  /* ---------- Hors ligne ---------- */
+  // En ligne (https), la page se met en cache pour continuer à marcher sans réseau. Ouverte en fichier local, rien à faire.
+  if ('serviceWorker' in navigator && location.protocol === 'https:') {
+    navigator.serviceWorker.register('sw.js').catch(function () { /* le jeu marche quand même */ });
+  }
+
+  /* ---------- Démarrage ---------- */
+  majAffichageFiche();
+  majBandeau();
+  setInterval(majBandeau, 30000);
+
+  // Accès pour les tests automatiques
+  window.__roulette = { tirerEntier: tirerEntier, estGagnante: estGagnante, simuler: simuler, rotationPour: rotationPour, caseSousPointeur: caseSousPointeur, NB_CASES: NB_CASES };
+})();
+</script>
+</body>
+</html>

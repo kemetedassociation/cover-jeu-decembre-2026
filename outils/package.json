@@ -1,0 +1,17 @@
+{
+  "name": "scratchpad",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "docx": "^9.16.0",
+    "playwright-core": "^1.56.1",
+    "qrcode": "^1.5.4"
+  }
+}
