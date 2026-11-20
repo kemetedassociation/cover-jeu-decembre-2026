@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Bons COVER -5 %</title>
+<title>Bons COVER</title>
 <style>
   :root { --rouge: #C8102E; --noir: #111111; --gris: #666666; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -15,6 +15,7 @@
   }
   .outils b { font-weight: 900; text-transform: uppercase; }
   .outils label { display: flex; gap: 6px; align-items: center; }
+  .outils select { font: inherit; padding: 6px 8px; border: 0; border-radius: 4px; }
   .outils input { width: 70px; font: inherit; padding: 6px 8px; border: 0; border-radius: 4px; }
   .outils button { font: inherit; font-weight: 800; text-transform: uppercase; border: 0; border-radius: 4px; padding: 8px 16px; cursor: pointer; background: #FFF; color: var(--noir); }
   .outils button.imprimer { background: var(--rouge); color: #FFF; }
@@ -34,6 +35,7 @@
   .num { font-weight: 900; font-size: 14pt; letter-spacing: .03em; }
   .remise { font-weight: 900; font-size: 34pt; line-height: 1; color: var(--rouge); align-self: center; }
   .remise small { display: block; font-size: 8pt; color: var(--noir); letter-spacing: .02em; text-transform: uppercase; margin-top: 1mm; }
+  .bon.d .remise { font-size: 23pt; white-space: nowrap; }
   .champs { font-size: 8.4pt; font-weight: 700; display: flex; flex-direction: column; gap: 2.6mm; align-self: center; }
   .champs span { display: inline-block; border-bottom: .3mm solid var(--noir); width: 26mm; margin-left: 1.5mm; }
   .conditions { grid-column: 1 / -1; font-size: 6.4pt; color: #333; line-height: 1.3; }
@@ -49,25 +51,26 @@
 </head>
 <body>
 <div class="outils">
-  <b>Bons de réduction</b>
-  <label>De B-<input id="de" type="number" min="1" max="999" value="1"></label>
-  <label>à B-<input id="a" type="number" min="1" max="999" value="160"></label>
+  <b>Bons de la roulette</b>
+  <label>Type <select id="type"><option value="B">-5 % (B-001…)</option><option value="D">Doudoune 99,99 € (D-001…)</option></select></label>
+  <label>De n° <input id="de" type="number" min="1" max="999" value="1"></label>
+  <label>à <input id="a" type="number" min="1" max="999" value="160"></label>
   <button id="generer">Mettre à jour</button>
   <button class="imprimer" onclick="window.print()">Imprimer</button>
-  <span class="aide">Quand la tablette affiche « Gagné », remettez au client le bon du même numéro, après avoir noté la fiche et la date limite affichées à l'écran. 160 bons = 16 pages (300 fiches et au plus 2 tours chacune donnent environ 150 gagnants au maximum).</span>
+  <span class="aide">Quand la tablette affiche un gain, remettez au client le bon du même numéro (B pour -5 %, D pour la doudoune), après avoir noté le numéro de joueur et la date limite affichés à l'écran. Prévoyez environ 1 bon B pour 4 parties et 1 bon D pour 12 parties (par défaut : 160 bons B, 60 bons D).</span>
 </div>
 <div id="pages"></div>
 
 <template id="modele">
   <div class="bon">
     <div class="haut"><span class="marque">COVER</span><span class="num"></span></div>
-    <div class="remise">-5 %<small>Bon de réduction</small></div>
+    <div class="remise"><span class="val"></span><small class="lib"></small></div>
     <div class="champs">
-      <div>Fiche n°<span></span></div>
+      <div>Joueur n°<span></span></div>
       <div>Valable jusqu'au<span></span></div>
       <div>Visa vendeur<span></span></div>
     </div>
-    <div class="conditions">Valable 7 jours, jour du gain compris, à la boutique COVER, 6 b rue Pasteur, Passages Pasteur, Besançon. Un seul passage en caisse, non cumulable avec une autre réduction ou promotion, non échangeable contre de l'argent. Roulette COVER, décembre 2026.</div>
+    <div class="conditions"><span class="cond"></span> Valable 7 jours, jour du gain compris, à la boutique COVER, 6 b rue Pasteur, Passages Pasteur, Besançon. Un seul passage en caisse, non cumulable avec une autre réduction ou promotion, non échangeable contre de l'argent. Roulette COVER, décembre 2026.</div>
   </div>
 </template>
 
@@ -75,6 +78,7 @@
 (function () {
   function pad(n) { return String(n).padStart(3, '0'); }
   function generer() {
+    var type = document.getElementById('type').value;
     var de = Math.max(1, Math.min(999, parseInt(document.getElementById('de').value, 10) || 1));
     var a = Math.max(de, Math.min(999, parseInt(document.getElementById('a').value, 10) || 160));
     var cible = document.getElementById('pages');
@@ -88,11 +92,19 @@
         cible.appendChild(page);
       }
       var b = modele.content.cloneNode(true);
-      b.querySelector('.num').textContent = 'B-' + pad(n);
+      if (type === 'D') b.querySelector('.bon').classList.add('d');
+      b.querySelector('.num').textContent = type + '-' + pad(n);
+      b.querySelector('.val').textContent = type === 'B' ? '-5 %' : '99,99 €';
+      b.querySelector('.lib').textContent = type === 'B' ? 'Bon de réduction' : 'Doudoune Calvin Klein';
+      b.querySelector('.cond').textContent = type === 'B' ? '5 % de réduction sur les articles du passage en caisse.' : 'Une doudoune Calvin Klein [modèle] à 99,99 € au lieu de 199,99 €, selon stock.';
       page.appendChild(b);
     }
   }
   document.getElementById('generer').addEventListener('click', generer);
+  document.getElementById('type').addEventListener('change', function () {
+    document.getElementById('a').value = this.value === 'B' ? 160 : 60;
+    generer();
+  });
   generer();
 })();
 </script>

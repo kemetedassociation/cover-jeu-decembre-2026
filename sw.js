@@ -1,6 +1,6 @@
 // Cache de la roulette pour qu'elle fonctionne sans réseau en boutique.
 // Changer VERSION à chaque mise à jour de roulette.html.
-const VERSION = 'roulette-v1';
+const VERSION = 'roulette-v2';
 const FICHIERS = ['roulette.html', 'manifest.webmanifest', 'icone-180.png', 'icone-192.png', 'icone-512.png'];
 
 self.addEventListener('install', (e) => {

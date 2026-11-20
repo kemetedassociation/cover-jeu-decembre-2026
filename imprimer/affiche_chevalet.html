@@ -19,17 +19,19 @@
   .a5 { page: a5; width: 148mm; height: 210mm; }
 
   /* Affiche A3 */
-  .a3 .haut { background: var(--rouge); color: var(--blanc); padding: 22mm 20mm 18mm; }
+  .a3 .haut { background: var(--rouge); color: var(--blanc); padding: 18mm 20mm 14mm; }
   .a3 .marque { font-weight: 900; font-size: 30pt; letter-spacing: .14em; }
-  .a3 .accroche { font-size: 76pt; margin-top: 10mm; }
+  .a3 .accroche { font-size: 68pt; margin-top: 8mm; }
   .a3 .valeur { font-size: 30pt; font-weight: 900; margin-top: 6mm; }
   .a3 .dates { background: var(--noir); color: var(--blanc); padding: 8mm 20mm; font-size: 22pt; font-weight: 800; text-transform: uppercase; }
-  .a3 .corps { flex: 1; padding: 14mm 20mm 0; display: flex; flex-direction: column; gap: 9mm; }
+  .a3 .corps { flex: 1; padding: 12mm 20mm 0; display: flex; flex-direction: column; gap: 7mm; }
   .etapes { list-style: none; display: flex; flex-direction: column; gap: 6mm; }
   .etapes li { display: flex; gap: 7mm; align-items: center; font-size: 25pt; font-weight: 800; }
   .etapes .n { flex: none; width: 17mm; height: 17mm; border-radius: 50%; background: var(--rouge); color: var(--blanc); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 24pt; }
   .chances { align-self: flex-start; border: 1.4mm solid var(--rouge); padding: 4mm 7mm; font-size: 30pt; color: var(--rouge); }
-  .bonus { font-size: 17pt; font-weight: 600; line-height: 1.35; }
+  .chances.noir { border-color: var(--noir); color: var(--noir); }
+  .a3 .chances { font-size: 21pt; }
+  .bonus { font-size: 16pt; font-weight: 600; line-height: 1.35; }
   .bonus b { font-weight: 900; text-transform: uppercase; }
   .bas { display: flex; gap: 10mm; align-items: flex-end; padding: 10mm 20mm 16mm; border-top: .8mm solid var(--noir); margin: auto 20mm 0; padding-left: 0; padding-right: 0; }
   .gratuit { font-size: 24pt; font-weight: 900; text-transform: uppercase; line-height: 1.1; }
@@ -44,14 +46,14 @@
   /* Chevalet A5 */
   .a5 .haut { background: var(--rouge); color: var(--blanc); padding: 11mm 10mm 9mm; }
   .a5 .marque { font-weight: 900; font-size: 15pt; letter-spacing: .14em; }
-  .a5 .accroche { font-size: 33pt; margin-top: 4mm; }
+  .a5 .accroche { font-size: 30pt; margin-top: 4mm; }
   .a5 .valeur { font-size: 15pt; font-weight: 900; margin-top: 3mm; }
   .a5 .dates { background: var(--noir); color: var(--blanc); padding: 4mm 10mm; font-size: 11pt; font-weight: 800; text-transform: uppercase; }
   .a5 .corps { padding: 7mm 10mm 0; display: flex; flex-direction: column; gap: 4.5mm; }
   .a5 .etapes { gap: 3mm; }
   .a5 .etapes li { font-size: 12.5pt; gap: 3.5mm; }
   .a5 .etapes .n { width: 8.5mm; height: 8.5mm; font-size: 12pt; }
-  .a5 .chances { font-size: 15pt; border-width: .8mm; padding: 2mm 3.5mm; }
+  .a5 .chances { font-size: 12pt; border-width: .8mm; padding: 2mm 3.5mm; }
   .a5 .bonus { font-size: 9.5pt; }
   .a5 .bas { margin: auto 10mm 0; padding: 5mm 0 8mm; gap: 5mm; border-top-width: .5mm; }
   .a5 .gratuit { font-size: 12pt; }
@@ -79,22 +81,22 @@
   <div class="haut">
     <div class="marque">COVER</div>
     <div class="accroche titre">Gagnez une doudoune Calvin Klein</div>
-    <div class="valeur">Valeur 200 €</div>
+    <div class="valeur">Valeur 199,99 €</div>
   </div>
   <div class="dates">Du samedi 5 au samedi 12 décembre 2026 · Tirage le dimanche 13 décembre</div>
   <div class="corps">
     <ol class="etapes">
-      <li><span class="n">1</span>Remplissez une fiche</li>
-      <li><span class="n">2</span>Déposez-la dans l'urne</li>
-      <li><span class="n">3</span>Tournez la roue sur la tablette</li>
+      <li><span class="n">1</span>Tapez votre numéro de téléphone sur la tablette</li>
+      <li><span class="n">2</span>Tournez la roue</li>
     </ol>
-    <div class="chances titre">3 chances sur 12 de gagner -5 %</div>
-    <p class="bonus"><b>Tour bonus :</b> partagez une story Instagram ou une publication TikTok qui cite COVER (@cover_besancon sur Instagram, [compte TikTok] sur TikTok), montrez-la au vendeur et rejouez une fois.</p>
+    <div class="chances titre">1 chance sur 12 : la doudoune à 99,99 € au lieu de 199,99 €</div>
+    <div class="chances titre noir">3 chances sur 12 : un bon de -5 %</div>
+    <p class="bonus"><b>Défi photo :</b> abonnez-vous à @cover_besancon, prenez-vous en photo chez COVER avec un article porté et publiez-la avec #coverbesancon. Montrez-la au vendeur : vous êtes inscrit au tirage au sort de la doudoune offerte et vous gagnez un tour de roue en plus.</p>
   </div>
   <div class="bas">
     <div style="flex:1">
       <div class="gratuit">Gratuit et sans obligation d'achat</div>
-      <p class="petit">Réservé aux 18 ans et plus, une fiche par personne. Une fiche = une chance au tirage, quel que soit le nombre de tours. Bon de 5 % valable 7 jours, en un seul passage en caisse, non cumulable. Jeu non géré ni sponsorisé par Instagram, TikTok ou Meta. Organisateur : [raison sociale de COVER].</p>
+      <p class="petit">Réservé aux 18 ans et plus, un numéro de téléphone par personne. Bons valables 7 jours, en un seul passage en caisse, non cumulables. Aucun achat nécessaire pour le défi photo. Jeu non géré ni sponsorisé par Instagram, TikTok ou Meta. Organisateur : [raison sociale de COVER].</p>
     </div>
     <div class="qr-bloc"><div class="qr"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 37 37" shape-rendering="crispEdges"><path fill="#FFFFFF" d="M0 0h37v37H0z"/><path stroke="#111111" d="M2 2.5h7m2 0h2m1 0h1m1 0h1m1 0h1m1 0h4m1 0h1m2 0h7M2 3.5h1m5 0h1m2 0h1m2 0h1m1 0h5m1 0h3m1 0h1m1 0h1m5 0h1M2 4.5h1m1 0h3m1 0h1m1 0h2m1 0h2m2 0h1m2 0h1m2 0h2m3 0h1m1 0h3m1 0h1M2 5.5h1m1 0h3m1 0h1m1 0h1m3 0h1m4 0h1m1 0h1m2 0h1m1 0h1m1 0h1m1 0h3m1 0h1M2 6.5h1m1 0h3m1 0h1m1 0h4m4 0h1m2 0h5m2 0h1m1 0h3m1 0h1M2 7.5h1m5 0h1m1 0h1m1 0h3m1 0h1m3 0h1m1 0h3m1 0h1m1 0h1m5 0h1M2 8.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M10 9.5h1m6 0h2m3 0h5M2 10.5h1m1 0h5m3 0h1m1 0h4m1 0h1m1 0h1m2 0h2m2 0h5M5 11.5h1m3 0h2m1 0h1m1 0h2m2 0h1m2 0h3m1 0h1m2 0h2m1 0h2m1 0h1M2 12.5h1m1 0h1m1 0h5m1 0h2m1 0h6m1 0h3m2 0h2m1 0h1m1 0h1M2 13.5h1m1 0h1m1 0h2m3 0h1m1 0h1m1 0h1m2 0h1m1 0h2m1 0h2m2 0h2m1 0h3m1 0h1M3 14.5h2m1 0h5m1 0h1m1 0h1m1 0h2m1 0h1m6 0h2m1 0h3M3 15.5h1m2 0h2m1 0h2m1 0h1m1 0h1m2 0h2m1 0h4m1 0h1m1 0h2m2 0h1m1 0h2M2 16.5h1m2 0h2m1 0h1m2 0h3m2 0h2m4 0h3m2 0h2m1 0h1m2 0h1M4 17.5h1m1 0h1m3 0h4m1 0h1m1 0h1m2 0h1m1 0h2m3 0h3m1 0h2M2 18.5h1m1 0h1m3 0h2m1 0h3m1 0h1m1 0h1m1 0h1m4 0h4m1 0h2m3 0h1M2 19.5h2m2 0h2m1 0h1m2 0h1m1 0h1m1 0h1m1 0h1m1 0h3m2 0h1m2 0h2m1 0h2m1 0h1M2 20.5h2m4 0h2m1 0h1m2 0h4m4 0h3m2 0h1m1 0h2m1 0h2M6 21.5h1m2 0h3m1 0h2m1 0h1m1 0h1m2 0h4m3 0h6M2 22.5h2m2 0h1m1 0h1m4 0h4m2 0h3m2 0h4m1 0h3m1 0h1M2 23.5h1m2 0h2m3 0h2m1 0h1m3 0h1m1 0h5m1 0h2m1 0h1m5 0h1M2 24.5h1m3 0h3m5 0h1m2 0h2m1 0h1m1 0h2m2 0h1m1 0h1m1 0h4M2 25.5h1m2 0h1m3 0h1m1 0h6m1 0h1m2 0h1m1 0h6m1 0h5M2 26.5h1m1 0h2m1 0h2m1 0h1m2 0h2m2 0h1m1 0h1m4 0h1m1 0h5m2 0h1M10 27.5h1m1 0h3m1 0h1m3 0h5m1 0h1m3 0h1m1 0h3M2 28.5h7m4 0h3m1 0h1m2 0h1m1 0h5m1 0h1m1 0h1m1 0h2M2 29.5h1m5 0h1m1 0h2m6 0h1m1 0h2m1 0h1m1 0h2m3 0h3M2 30.5h1m1 0h3m1 0h1m1 0h4m2 0h1m1 0h3m3 0h1m1 0h6m2 0h1M2 31.5h1m1 0h3m1 0h1m1 0h2m3 0h2m2 0h1m1 0h3m1 0h3m2 0h2m1 0h2M2 32.5h1m1 0h3m1 0h1m1 0h1m2 0h2m2 0h3m2 0h1m2 0h2m1 0h2m1 0h1M2 33.5h1m5 0h1m2 0h1m4 0h1m1 0h1m3 0h4m1 0h1m2 0h1m1 0h1M2 34.5h7m1 0h1m2 0h3m1 0h1m1 0h1m2 0h1m1 0h4m1 0h1m3 0h1"/></svg>
 </div>Règlement complet</div>
@@ -105,23 +107,23 @@
 <section class="feuille a5">
   <div class="haut">
     <div class="marque">COVER</div>
-    <div class="accroche titre">Gagnez une doudoune Calvin Klein</div>
-    <div class="valeur">Valeur 200 €</div>
+    <div class="accroche titre">La doudoune Calvin Klein à 99,99 €</div>
+    <div class="valeur">au lieu de 199,99 € : tentez la roue !</div>
   </div>
   <div class="dates">Du 5 au 12 décembre 2026 · Tirage le 13 décembre</div>
   <div class="corps">
     <ol class="etapes">
-      <li><span class="n">1</span>Remplissez une fiche</li>
-      <li><span class="n">2</span>Déposez-la dans l'urne</li>
-      <li><span class="n">3</span>Tournez la roue</li>
+      <li><span class="n">1</span>Votre téléphone sur la tablette</li>
+      <li><span class="n">2</span>Tournez la roue</li>
     </ol>
-    <div class="chances titre">3 chances sur 12 de gagner -5 %</div>
-    <p class="bonus"><b>Tour bonus :</b> une story Instagram qui cite @cover_besancon, ou un TikTok qui cite COVER = un tour de plus.</p>
+    <div class="chances titre">1 chance sur 12 : doudoune à 99,99 €</div>
+    <div class="chances titre noir">3 chances sur 12 : -5 %</div>
+    <p class="bonus"><b>Défi photo :</b> abonné à @cover_besancon + photo chez COVER avec #coverbesancon = un tour en plus et le tirage de la doudoune offerte.</p>
   </div>
   <div class="bas">
     <div style="flex:1">
       <div class="gratuit">Gratuit et sans obligation d'achat</div>
-      <p class="petit">18 ans et plus. Une fiche par personne. Bon valable 7 jours, un seul passage en caisse, non cumulable. Jeu non géré ni sponsorisé par Instagram, TikTok ou Meta.</p>
+      <p class="petit">18 ans et plus. Un téléphone par personne. Bons valables 7 jours, un seul passage en caisse, non cumulables. Jeu non géré ni sponsorisé par Instagram, TikTok ou Meta.</p>
     </div>
     <div class="qr-bloc"><div class="qr"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 37 37" shape-rendering="crispEdges"><path fill="#FFFFFF" d="M0 0h37v37H0z"/><path stroke="#111111" d="M2 2.5h7m2 0h2m1 0h1m1 0h1m1 0h1m1 0h4m1 0h1m2 0h7M2 3.5h1m5 0h1m2 0h1m2 0h1m1 0h5m1 0h3m1 0h1m1 0h1m5 0h1M2 4.5h1m1 0h3m1 0h1m1 0h2m1 0h2m2 0h1m2 0h1m2 0h2m3 0h1m1 0h3m1 0h1M2 5.5h1m1 0h3m1 0h1m1 0h1m3 0h1m4 0h1m1 0h1m2 0h1m1 0h1m1 0h1m1 0h3m1 0h1M2 6.5h1m1 0h3m1 0h1m1 0h4m4 0h1m2 0h5m2 0h1m1 0h3m1 0h1M2 7.5h1m5 0h1m1 0h1m1 0h3m1 0h1m3 0h1m1 0h3m1 0h1m1 0h1m5 0h1M2 8.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M10 9.5h1m6 0h2m3 0h5M2 10.5h1m1 0h5m3 0h1m1 0h4m1 0h1m1 0h1m2 0h2m2 0h5M5 11.5h1m3 0h2m1 0h1m1 0h2m2 0h1m2 0h3m1 0h1m2 0h2m1 0h2m1 0h1M2 12.5h1m1 0h1m1 0h5m1 0h2m1 0h6m1 0h3m2 0h2m1 0h1m1 0h1M2 13.5h1m1 0h1m1 0h2m3 0h1m1 0h1m1 0h1m2 0h1m1 0h2m1 0h2m2 0h2m1 0h3m1 0h1M3 14.5h2m1 0h5m1 0h1m1 0h1m1 0h2m1 0h1m6 0h2m1 0h3M3 15.5h1m2 0h2m1 0h2m1 0h1m1 0h1m2 0h2m1 0h4m1 0h1m1 0h2m2 0h1m1 0h2M2 16.5h1m2 0h2m1 0h1m2 0h3m2 0h2m4 0h3m2 0h2m1 0h1m2 0h1M4 17.5h1m1 0h1m3 0h4m1 0h1m1 0h1m2 0h1m1 0h2m3 0h3m1 0h2M2 18.5h1m1 0h1m3 0h2m1 0h3m1 0h1m1 0h1m1 0h1m4 0h4m1 0h2m3 0h1M2 19.5h2m2 0h2m1 0h1m2 0h1m1 0h1m1 0h1m1 0h1m1 0h3m2 0h1m2 0h2m1 0h2m1 0h1M2 20.5h2m4 0h2m1 0h1m2 0h4m4 0h3m2 0h1m1 0h2m1 0h2M6 21.5h1m2 0h3m1 0h2m1 0h1m1 0h1m2 0h4m3 0h6M2 22.5h2m2 0h1m1 0h1m4 0h4m2 0h3m2 0h4m1 0h3m1 0h1M2 23.5h1m2 0h2m3 0h2m1 0h1m3 0h1m1 0h5m1 0h2m1 0h1m5 0h1M2 24.5h1m3 0h3m5 0h1m2 0h2m1 0h1m1 0h2m2 0h1m1 0h1m1 0h4M2 25.5h1m2 0h1m3 0h1m1 0h6m1 0h1m2 0h1m1 0h6m1 0h5M2 26.5h1m1 0h2m1 0h2m1 0h1m2 0h2m2 0h1m1 0h1m4 0h1m1 0h5m2 0h1M10 27.5h1m1 0h3m1 0h1m3 0h5m1 0h1m3 0h1m1 0h3M2 28.5h7m4 0h3m1 0h1m2 0h1m1 0h5m1 0h1m1 0h1m1 0h2M2 29.5h1m5 0h1m1 0h2m6 0h1m1 0h2m1 0h1m1 0h2m3 0h3M2 30.5h1m1 0h3m1 0h1m1 0h4m2 0h1m1 0h3m3 0h1m1 0h6m2 0h1M2 31.5h1m1 0h3m1 0h1m1 0h2m3 0h2m2 0h1m1 0h3m1 0h3m2 0h2m1 0h2M2 32.5h1m1 0h3m1 0h1m1 0h1m2 0h2m2 0h3m2 0h1m2 0h2m1 0h2m1 0h1M2 33.5h1m5 0h1m2 0h1m4 0h1m1 0h1m3 0h4m1 0h1m2 0h1m1 0h1M2 34.5h7m1 0h1m2 0h3m1 0h1m1 0h1m2 0h1m1 0h4m1 0h1m3 0h1"/></svg>
 </div>Règlement</div>

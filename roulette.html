@@ -39,7 +39,7 @@
   #bandeau {
     background: var(--rouge); color: var(--blanc);
     padding: 12px 16px; text-align: center;
-    font-weight: 900; text-transform: uppercase; font-size: clamp(16px, 2.4vmin, 26px);
+    font-weight: 900; text-transform: uppercase; font-size: clamp(15px, 2.3vmin, 26px);
   }
   #bandeau.ferme { background: var(--noir); }
   #alerte-memoire, #bandeau-test {
@@ -83,28 +83,29 @@
 
   /* Panneau de jeu */
   .panneau { display: flex; flex-direction: column; gap: 1.2vh; max-width: 640px; width: 100%; justify-self: center; }
-  .lot { font-size: clamp(20px, 4.2vh, 50px); }
+  .lot { font-size: clamp(20px, 4vh, 48px); }
   .lot span { color: var(--rouge); }
-  .sous { font-size: clamp(14px, 2.1vh, 24px); color: var(--gris-texte); font-weight: 600; }
-  .chances {
-    align-self: flex-start;
+  .sous { font-size: clamp(14px, 2vh, 23px); color: var(--gris-texte); font-weight: 600; }
+  .chances { display: flex; flex-wrap: wrap; gap: .8vh; }
+  .chances span {
     background: var(--noir); color: var(--blanc); padding: .5vh 1.2vh;
-    font-weight: 900; text-transform: uppercase; font-size: clamp(14px, 2.4vh, 26px);
+    font-weight: 900; text-transform: uppercase; font-size: clamp(13px, 2.1vh, 24px);
   }
+  .chances span.r { background: var(--rouge); }
   .saisie {
     display: grid; gap: 1.2vh;
     grid-template-columns: 1fr;
-    grid-template-areas: "label" "fiche" "clavier" "message" "bonus" "jouer";
+    grid-template-areas: "label" "tel" "clavier" "message" "bonus" "jouer";
   }
-  .fiche-label { grid-area: label; font-weight: 900; text-transform: uppercase; font-size: clamp(15px, 2.4vh, 28px); }
-  .fiche-affichage { grid-area: fiche; display: flex; gap: 1.2vh; }
-  .fiche-affichage div {
-    flex: 1; height: clamp(56px, 8.4vh, 110px);
+  .tel-label { grid-area: label; font-weight: 900; text-transform: uppercase; font-size: clamp(15px, 2.4vh, 28px); }
+  .tel-affichage {
+    grid-area: tel; height: clamp(56px, 8.4vh, 110px);
     border: 4px solid var(--noir); border-radius: 1vh;
     display: flex; align-items: center; justify-content: center;
-    font-weight: 900; font-size: clamp(36px, 6.6vh, 84px);
+    font-weight: 900; font-size: clamp(28px, 5.2vh, 64px); letter-spacing: .04em; font-variant-numeric: tabular-nums;
   }
-  .fiche-affichage div.actif { border-color: var(--rouge); box-shadow: 0 0 0 3px var(--rouge); }
+  .tel-affichage.complet { border-color: var(--rouge); box-shadow: 0 0 0 3px var(--rouge); }
+  .tel-affichage .vide { color: #C8C8C8; }
   .clavier { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1vh; }
   .saisie .clavier { grid-area: clavier; }
   .clavier button {
@@ -135,24 +136,23 @@
   #zone-bonus { grid-area: bonus; display: none; }
   .mention { font-size: clamp(12px, 1.7vh, 18px); color: var(--gris-texte); }
 
-  /* Portrait : roue en haut, saisie en deux colonnes (fiche et bouton à gauche, clavier à droite) */
+  /* Portrait : roue en haut, saisie en deux colonnes (téléphone et bouton à gauche, clavier à droite) */
   @media (orientation: portrait) {
-    main { grid-template-columns: 1fr; align-items: start; gap: 2vh; padding: 2vh 5vw; }
-    .roue-cadre { width: min(76vw, 34vh); margin-top: 2.6vh; }
+    main { grid-template-columns: 1fr; align-items: start; gap: 1.4vh; padding: 1.4vh 5vw; }
+    .roue-cadre { width: min(76vw, 30vh); margin-top: 2.6vh; }
     .panneau { max-width: 900px; gap: 1vh; }
-    .lot { font-size: clamp(20px, 3.2vh, 46px); }
+    .lot { font-size: clamp(20px, 3vh, 44px); }
     .sous { font-size: clamp(14px, 1.8vh, 22px); }
-    .chances { font-size: clamp(14px, 2vh, 24px); }
+    .chances span { font-size: clamp(13px, 1.8vh, 22px); }
     .saisie {
       grid-template-columns: 1fr 1fr; column-gap: 3vw; align-items: start;
-      grid-template-areas: "label clavier" "fiche clavier" "message clavier" "bonus clavier" "jouer clavier";
+      grid-template-areas: "label clavier" "tel clavier" "message clavier" "bonus clavier" "jouer clavier";
       grid-template-rows: auto auto auto auto 1fr;
     }
     .saisie .btn-principal { align-self: end; }
     .clavier button { height: clamp(48px, 5.4vh, 84px); }
-    .fiche-affichage div { height: clamp(56px, 7.4vh, 100px); font-size: clamp(36px, 5.6vh, 76px); }
+    .tel-affichage { height: clamp(56px, 7.4vh, 100px); font-size: clamp(22px, 3.4vh, 48px); }
     .btn-principal { font-size: clamp(18px, 2.6vh, 40px); }
-    main { gap: 1.4vh; padding: 1.4vh 5vw; }
   }
 
   /* Boutons discrets en coin */
@@ -177,21 +177,32 @@
   .resultat-titre { font-size: clamp(44px, 10vmin, 120px); text-align: center; }
   .gagne .resultat-titre { color: var(--rouge); }
   .resultat-texte { text-align: center; font-size: clamp(18px, 3vmin, 32px); font-weight: 700; }
+  .numero-joueur { text-align: center; font-weight: 900; font-size: clamp(18px, 3vmin, 30px); text-transform: uppercase; }
+  .numero-joueur b { font-size: 1.5em; color: var(--rouge); }
   .bon {
     border: .6vmin dashed var(--rouge); border-radius: 1.4vmin; padding: 2.4vmin; text-align: center;
   }
   .bon .num { font-size: clamp(40px, 8vmin, 96px); font-weight: 900; letter-spacing: .04em; }
   .bon .details { font-size: clamp(15px, 2.3vmin, 24px); font-weight: 600; margin-top: .8vmin; }
-  .contact { border-top: 2px solid var(--gris); padding-top: 2vmin; display: flex; flex-direction: column; gap: 1.4vmin; }
-  .contact h3 { font-size: clamp(18px, 2.8vmin, 30px); }
-  .contact input[type=email], .contact input[type=tel], .champ {
+  .defi { background: var(--gris); border-radius: 1.4vmin; padding: 2vmin 2.4vmin; font-size: clamp(15px, 2.3vmin, 24px); font-weight: 600; line-height: 1.35; }
+  .defi b { font-weight: 900; text-transform: uppercase; }
+  .defi.ok { background: #E7F4EA; color: var(--vert); font-weight: 800; }
+
+  /* Inscription */
+  .form { display: flex; flex-direction: column; gap: 1.4vmin; }
+  .form h2 { font-size: clamp(26px, 5vmin, 54px); }
+  .form .tel-rappel { font-weight: 800; font-size: clamp(16px, 2.6vmin, 28px); }
+  .champ {
     width: 100%; font: inherit; font-size: clamp(18px, 2.8vmin, 30px); padding: 1.4vmin 1.8vmin;
     border: 3px solid #CCC; border-radius: 1vmin; user-select: text; -webkit-user-select: text;
   }
-  .contact input:focus, .champ:focus { outline: none; border-color: var(--noir); }
+  .champ:focus { outline: none; border-color: var(--noir); }
+  .deux { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4vmin; }
+  .facultatif { font-size: clamp(13px, 2vmin, 20px); color: var(--gris-texte); font-weight: 600; }
   .case { display: flex; gap: 1.6vmin; align-items: flex-start; font-size: clamp(16px, 2.4vmin, 26px); font-weight: 600; cursor: pointer; }
   .case input { width: clamp(28px, 4.4vmin, 48px); height: clamp(28px, 4.4vmin, 48px); flex: none; accent-color: var(--rouge); margin-top: .2vmin; }
-  #contact-retour { font-weight: 800; font-size: clamp(15px, 2.3vmin, 24px); min-height: 1.2em; }
+  .case b { font-weight: 800; }
+  #form-retour { font-weight: 800; font-size: clamp(15px, 2.3vmin, 24px); min-height: 1.2em; color: var(--rouge); }
   .ligne-boutons { display: flex; gap: 1.4vmin; flex-wrap: wrap; }
   .ligne-boutons > * { flex: 1; }
 
@@ -210,7 +221,8 @@
   .stat span { font-size: clamp(13px, 1.9vmin, 18px); font-weight: 700; color: var(--gris-texte); text-transform: uppercase; }
   .bloc { border: 2px solid var(--gris); border-radius: 1.2vmin; padding: 2vmin; display: flex; flex-direction: column; gap: 1.2vmin; }
   .bloc h3 { font-size: clamp(17px, 2.6vmin, 26px); font-weight: 900; text-transform: uppercase; }
-  .bloc p { font-size: clamp(14px, 2vmin, 20px); }
+  .bloc p, .bloc li { font-size: clamp(14px, 2vmin, 20px); }
+  .bloc ul { margin-left: 1.4em; }
   .ligne-saisie { display: flex; gap: 1.2vmin; flex-wrap: wrap; }
   .ligne-saisie .champ { flex: 1; min-width: 140px; }
   .retour { font-weight: 800; font-size: clamp(14px, 2vmin, 20px); min-height: 1.2em; }
@@ -222,6 +234,9 @@
   .scroll-table { max-height: 40vh; overflow: auto; -webkit-overflow-scrolling: touch; }
   .interrupteur { display: flex; align-items: center; gap: 1.4vmin; font-weight: 800; font-size: clamp(16px, 2.4vmin, 24px); }
   .interrupteur input { width: clamp(28px, 4.4vmin, 44px); height: clamp(28px, 4.4vmin, 44px); accent-color: var(--rouge); }
+  .tirage-res { display: grid; gap: 1vmin; }
+  .tirage-res div { background: var(--gris); border-radius: 1vmin; padding: 1.4vmin; font-size: clamp(15px, 2.2vmin, 22px); }
+  .tirage-res div b { color: var(--rouge); text-transform: uppercase; }
 </style>
 </head>
 <body>
@@ -234,28 +249,28 @@
     <div class="zone-roue">
       <div class="roue-cadre">
         <div class="pointeur" aria-hidden="true"></div>
-        <svg id="roue" viewBox="-100 -100 200 200" role="img" aria-label="Roulette COVER, 12 cases dont 3 gagnantes"></svg>
+        <svg id="roue" viewBox="-100 -100 200 200" role="img" aria-label="Roulette COVER : 12 cases, 3 bons de 5 %, 1 doudoune à 99,99 €"></svg>
         <div class="moyeu">COVER</div>
       </div>
     </div>
 
     <section class="panneau">
-      <div class="lot titre">Gagnez une doudoune <span>Calvin Klein</span></div>
-      <div class="sous">Valeur 200 €, tirage au sort le dimanche 13 décembre. Et tout de suite, tentez un bon de 5 % à la roulette.</div>
-      <div class="chances">3 chances sur 12 de gagner -5 %</div>
+      <div class="lot titre">Tentez la doudoune <span>Calvin Klein à 99,99 €</span></div>
+      <div class="sous">Au lieu de 199,99 €. Ou un bon de -5 %. Et le 13 décembre, une doudoune offerte par tirage au sort.</div>
+      <div class="chances"><span class="r">1 chance sur 12 : doudoune à 99,99 €</span><span>3 chances sur 12 : -5 %</span></div>
 
       <div class="saisie">
-      <div class="fiche-label">Numéro de fiche</div>
-      <div class="fiche-affichage" id="fiche-affichage"><div></div><div></div><div></div></div>
-      <div class="clavier" id="clavier">
-        <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
-        <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
-        <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
-        <button data-k="C" class="efface">Effacer</button><button data-k="0">0</button><button data-k="B" class="efface">⌫</button>
-      </div>
-      <div id="message" role="status"></div>
-      <div id="zone-bonus"><button class="btn-secondaire" id="btn-bonus" style="width:100%">Tour bonus : code vendeur</button></div>
-      <button class="btn-principal" id="btn-jouer">Lancer la roue</button>
+        <div class="tel-label">Votre numéro de téléphone</div>
+        <div class="tel-affichage" id="tel-affichage"></div>
+        <div class="clavier" id="clavier">
+          <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+          <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+          <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+          <button data-k="C" class="efface">Effacer</button><button data-k="0">0</button><button data-k="B" class="efface">⌫</button>
+        </div>
+        <div id="message" role="status"></div>
+        <div id="zone-bonus"><button class="btn-secondaire" id="btn-bonus" style="width:100%">Défi photo validé : code vendeur</button></div>
+        <button class="btn-principal" id="btn-jouer">Continuer</button>
       </div>
       <div class="mention">Jeu gratuit et sans obligation d'achat, réservé aux personnes majeures. Règlement disponible en caisse.</div>
     </section>
@@ -265,28 +280,40 @@
 <button class="coin" id="btn-plein-ecran" aria-label="Plein écran">⛶</button>
 <button class="coin" id="btn-vendeur" aria-label="Espace vendeur">⚙</button>
 
+<!-- Inscription d'un nouveau téléphone -->
+<div class="ecran" id="ecran-inscription">
+  <div class="carte form">
+    <h2 class="titre">Bienvenue !</h2>
+    <div class="tel-rappel" id="insc-tel"></div>
+    <div class="facultatif">Les champs ci-dessous sont facultatifs.</div>
+    <div class="deux">
+      <input class="champ" id="i-prenom" placeholder="Prénom" autocomplete="given-name" autocapitalize="words">
+      <input class="champ" id="i-nom" placeholder="Nom" autocomplete="family-name" autocapitalize="words">
+    </div>
+    <input class="champ" type="email" id="i-email" placeholder="E-mail" autocomplete="email" inputmode="email" autocapitalize="off">
+    <label class="case"><input type="checkbox" id="i-majeur"><span><b>J'ai 18 ans ou plus et j'ai pris connaissance du règlement.</b> (obligatoire)</span></label>
+    <label class="case"><input type="checkbox" id="i-consent"><span id="i-consent-texte">J'accepte de recevoir les offres et nouveautés de COVER par e-mail et SMS</span></label>
+    <div class="facultatif">Cette case est facultative et ne change rien à votre participation. Votre téléphone sert à vous attribuer un numéro, à éviter les doublons et à vous joindre si vous gagnez le tirage.</div>
+    <div id="form-retour" role="status"></div>
+    <div class="ligne-boutons">
+      <button class="btn-clair" id="btn-insc-annuler">Annuler</button>
+      <button class="btn-principal" id="btn-insc-valider" style="flex:2">Tourner la roue</button>
+    </div>
+  </div>
+</div>
+
 <!-- Résultat -->
 <div class="ecran" id="ecran-resultat">
   <div class="carte" id="carte-resultat">
+    <div class="numero-joueur" id="res-numero"></div>
     <div class="resultat-titre titre" id="res-titre"></div>
     <div class="resultat-texte" id="res-texte"></div>
     <div class="bon" id="res-bon">
-      <div class="titre" style="font-size:clamp(16px,2.6vmin,28px)">Votre bon de réduction</div>
+      <div class="titre" style="font-size:clamp(16px,2.6vmin,28px)" id="res-bon-titre"></div>
       <div class="num" id="res-bon-num"></div>
       <div class="details" id="res-bon-details"></div>
     </div>
-    <div class="resultat-texte" style="font-size:clamp(15px,2.3vmin,24px);font-weight:600">Votre fiche reste dans l'urne pour le tirage de la doudoune le dimanche 13 décembre.</div>
-
-    <div class="contact" id="bloc-contact">
-      <h3 class="titre">Restons en contact (facultatif)</h3>
-      <input type="email" id="c-email" placeholder="Votre e-mail" autocomplete="email" inputmode="email">
-      <input type="tel" id="c-tel" placeholder="Votre téléphone" autocomplete="tel" inputmode="tel">
-      <label class="case"><input type="checkbox" id="c-consent"><span id="c-consent-texte">J'accepte de recevoir les offres et nouveautés de COVER par e-mail et SMS</span></label>
-      <div class="mention">Facultatif : cela ne change rien à votre participation. Vous pouvez vous désinscrire à tout moment.</div>
-      <button class="btn-clair" id="btn-contact">Valider mes coordonnées</button>
-      <div id="contact-retour"></div>
-    </div>
-
+    <div class="defi" id="res-defi"></div>
     <button class="btn-principal" id="btn-suivant">Joueur suivant</button>
   </div>
 </div>
@@ -318,18 +345,32 @@
     <div class="stats" id="stats"></div>
 
     <div class="bloc">
-      <h3>Tour bonus</h3>
-      <p>Vérifiez sur le téléphone du client la story Instagram ou la publication TikTok qui cite le compte COVER, puis débloquez le tour. Une seule fois par fiche.</p>
+      <h3>Défi photo : tour bonus et tirage</h3>
+      <p>Vérifiez sur le téléphone du client :</p>
+      <ul>
+        <li>qu'il est abonné à @cover_besancon ;</li>
+        <li>qu'il a publié (story ou publication Instagram, ou TikTok) une photo prise chez COVER avec un article porté ;</li>
+        <li>que la publication contient #coverbesancon.</li>
+      </ul>
+      <p>Le client reçoit alors un tour de roue en plus (une seule fois) et il est inscrit au tirage du 13 décembre.</p>
       <div class="ligne-saisie">
-        <input class="champ" id="v-fiche-bonus" inputmode="numeric" maxlength="3" placeholder="N° de fiche (ex. 042)">
-        <button class="btn-secondaire" id="v-btn-bonus">Débloquer</button>
+        <input class="champ" id="v-defi" inputmode="numeric" maxlength="14" placeholder="Numéro de joueur (ex. 042) ou téléphone">
+        <button class="btn-secondaire" id="v-btn-defi">Valider le défi</button>
       </div>
-      <div class="retour" id="v-retour-bonus"></div>
+      <div class="retour" id="v-retour-defi"></div>
+    </div>
+
+    <div class="bloc">
+      <h3>Tirage au sort du 13 décembre</h3>
+      <p>Parmi les joueurs qui ont validé le défi photo : 1 gagnant et 2 suppléants. Possible à partir du dimanche 13 décembre 2026 (ou en mode test).</p>
+      <button class="btn-secondaire" id="v-btn-tirage">Lancer le tirage au sort</button>
+      <div class="tirage-res" id="v-tirage"></div>
+      <div class="retour" id="v-retour-tirage"></div>
     </div>
 
     <div class="bloc">
       <h3>Mode test</h3>
-      <label class="interrupteur"><input type="checkbox" id="v-test"> Mode test (rien n'est enregistré, pas de contrôle des dates ni des fiches)</label>
+      <label class="interrupteur"><input type="checkbox" id="v-test"> Mode test (rien n'est enregistré, pas de contrôle des dates ni des doublons)</label>
       <div class="ligne-boutons">
         <button class="btn-clair" id="v-btn-simu">Simuler 100 000 tirages</button>
       </div>
@@ -345,7 +386,7 @@
       <div class="retour" id="v-retour-parties"></div>
       <div class="scroll-table">
         <table class="table-parties">
-          <thead><tr><th>N</th><th>Date</th><th>Heure</th><th>Fiche</th><th>Tour</th><th>Résultat</th><th>Bon</th><th>Contact</th></tr></thead>
+          <thead><tr><th>N</th><th>Date</th><th>Heure</th><th>Joueur</th><th>Téléphone</th><th>Tour</th><th>Résultat</th><th>Bon</th><th>Tirage</th></tr></thead>
           <tbody id="v-liste"></tbody>
         </table>
       </div>
@@ -369,30 +410,36 @@
 
   /* ---------- Paramètres du jeu ---------- */
   var NB_CASES = 12;
-  var CASES_GAGNANTES = [0, 4, 8];               // 3 cases sur 12, réparties sur la roue
+  // Cases de la roue, dans le sens des aiguilles d'une montre en partant du haut
+  var MOINS5 = [0, 4, 8];                          // 3 cases « -5 % »
+  var DOUDOUNE = [6];                              // 1 case « doudoune à 99,99 € »
   var DEBUT = new Date(2026, 11, 5, 0, 0, 0);      // samedi 5 décembre 2026, 0 h
   var FIN = new Date(2026, 11, 12, 23, 59, 59);    // samedi 12 décembre 2026, 23 h 59
+  var TIRAGE = new Date(2026, 11, 13, 0, 0, 0);    // dimanche 13 décembre 2026
   var DUREE_ANIM = 5000;
   var VALIDITE_JOURS = 7;                          // jour de la partie compris
-  var FICHE_MIN = 1, FICHE_MAX = 300;
-  var CLE = 'cover_roulette_dec2026';
-  var TEXTE_CONSENTEMENT = "J'accepte de recevoir les offres et nouveautés de COVER par e-mail et SMS";
+  var CLE = 'cover_roulette_dec2026_v2';
   var ORIGINE = 'roulette COVER décembre 2026';
+  var RES_MOINS5 = '-5 %', RES_DOUDOUNE = 'doudoune 99,99 €', RES_PERDU = 'perdu';
 
   /* ---------- Tirage sans biais ---------- */
-  // Rejet des valeurs au-delà du plus grand multiple de n pour que chaque case ait exactement la même chance.
+  // Rejet des valeurs au-delà du plus grand multiple de n pour que chaque issue ait exactement la même chance.
   function tirerEntier(n) {
     var limite = Math.floor(0x100000000 / n) * n;
     var buf = new Uint32Array(1);
     do { crypto.getRandomValues(buf); } while (buf[0] >= limite);
     return buf[0] % n;
   }
-  function estGagnante(i) { return CASES_GAGNANTES.indexOf(i) !== -1; }
+  function resultatCase(i) {
+    if (MOINS5.indexOf(i) !== -1) return RES_MOINS5;
+    if (DOUDOUNE.indexOf(i) !== -1) return RES_DOUDOUNE;
+    return RES_PERDU;
+  }
 
   /* ---------- Stockage ---------- */
   var memoireOk = true;
   function etatVide() {
-    return { version: 1, code: '1234', parties: [], bonus: {}, prochainN: 1, prochainBon: 1 };
+    return { version: 2, code: '1234', participants: {}, parties: [], prochainN: 1, prochainNumero: 1, prochainBon: 1, prochainBonD: 1, tirage: null };
   }
   function charger() {
     try {
@@ -422,18 +469,15 @@
   var etat = charger();
   if (!memoireOk) document.getElementById('alerte-memoire').style.display = 'block';
   var modeTest = false;
+  var participantsTest = {};   // en mode test, rien ne touche aux vrais participants
 
-  /* ---------- Dates ---------- */
+  /* ---------- Dates et formats ---------- */
   function pad(n, l) { n = String(n); while (n.length < (l || 2)) n = '0' + n; return n; }
   function dateFr(d) { return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear(); }
   function heureFr(d) { return pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()); }
-  function dateLongue(d) {
-    return d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-  }
-  function finValidite(d) {
-    var f = new Date(d.getFullYear(), d.getMonth(), d.getDate() + VALIDITE_JOURS - 1);
-    return f;
-  }
+  function finValidite(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate() + VALIDITE_JOURS - 1); }
+  function telFr(t) { return t.replace(/(\d{2})(?=\d)/g, '$1 '); }
+  function telMasque(t) { return t.slice(0, 2) + ' •• •• ' + t.slice(6, 8) + ' ' + t.slice(8, 10); }
   function periode() {
     var now = new Date();
     if (now < DEBUT) return 'avant';
@@ -458,35 +502,39 @@
     var a = (angleDeg - 90) * Math.PI / 180;   // 0° = en haut, sens horaire
     return [r * Math.cos(a), r * Math.sin(a)];
   }
+  // Texte posé le long du rayon, lu du centre vers le bord ; `decalage` le pousse sur le côté (2 lignes)
+  function texteRadial(milieu, rayon, decalage, txt, taille, couleur) {
+    var t = document.createElementNS(svgNS, 'text');
+    t.setAttribute('transform', 'rotate(' + milieu + ') translate(' + decalage + ',' + (-rayon) + ') rotate(-90)');
+    t.setAttribute('text-anchor', 'middle');
+    t.setAttribute('dominant-baseline', 'middle');
+    t.setAttribute('fill', couleur);
+    t.setAttribute('font-family', 'Helvetica Neue, Arial, sans-serif');
+    t.setAttribute('font-weight', '900');
+    t.setAttribute('font-size', taille);
+    t.textContent = txt;
+    roue.appendChild(t);
+  }
   function dessinerRoue() {
     var pas = 360 / NB_CASES;
     var perdante = 0;
     for (var i = 0; i < NB_CASES; i++) {
       var a0 = i * pas, a1 = (i + 1) * pas;
       var p0 = point(a0, 100), p1 = point(a1, 100);
-      var g = estGagnante(i);
-      var fond, texte;
-      if (g) { fond = '#C8102E'; texte = '#FFFFFF'; }
-      else { fond = (perdante++ % 2 === 0) ? '#FFFFFF' : '#111111'; texte = fond === '#FFFFFF' ? '#111111' : '#FFFFFF'; }
+      var r = resultatCase(i);
+      var fond = r === RES_MOINS5 ? '#C8102E' : r === RES_DOUDOUNE ? '#111111' : (perdante++ % 2 === 0 ? '#FFFFFF' : '#EDEDED');
       var path = document.createElementNS(svgNS, 'path');
       path.setAttribute('d', 'M0,0 L' + p0[0] + ',' + p0[1] + ' A100,100 0 0,1 ' + p1[0] + ',' + p1[1] + ' Z');
       path.setAttribute('fill', fond);
       path.setAttribute('stroke', '#111111');
       path.setAttribute('stroke-width', '0.8');
       roue.appendChild(path);
-
-      // texte posé le long du rayon, lu du centre vers le bord
-      var t = document.createElementNS(svgNS, 'text');
       var milieu = a0 + pas / 2;
-      t.setAttribute('transform', 'rotate(' + milieu + ') translate(0,' + (g ? -62 : -60) + ') rotate(-90)');
-      t.setAttribute('text-anchor', 'middle');
-      t.setAttribute('dominant-baseline', 'middle');
-      t.setAttribute('fill', texte);
-      t.setAttribute('font-family', 'Helvetica Neue, Arial, sans-serif');
-      t.setAttribute('font-weight', '900');
-      t.setAttribute('font-size', g ? '15' : '8.4');
-      t.textContent = g ? '-5 %' : 'DOMMAGE';
-      roue.appendChild(t);
+      if (r === RES_MOINS5) texteRadial(milieu, 62, 0, '-5 %', 15, '#FFFFFF');
+      else if (r === RES_DOUDOUNE) {
+        texteRadial(milieu, 61, -5.2, 'DOUDOUNE', 7.6, '#FFFFFF');
+        texteRadial(milieu, 61, 5.2, '99,99 €', 9, '#FF4D63');
+      } else texteRadial(milieu, 60, 0, 'DOMMAGE', 8.4, '#111111');
     }
   }
   dessinerRoue();
@@ -508,16 +556,48 @@
     return Math.floor(angle / pas) % NB_CASES;
   }
 
-  /* ---------- Saisie de la fiche ---------- */
-  var saisie = '';
-  var enCours = false;
-  var ficheBonusAutorisee = null;   // fiche dont le tour bonus vient d'être débloqué par le vendeur
-  function majAffichageFiche() {
-    var cases = document.querySelectorAll('#fiche-affichage div');
-    for (var i = 0; i < 3; i++) {
-      cases[i].textContent = saisie[i] || '';
-      cases[i].classList.toggle('actif', i === saisie.length);
+  /* ---------- Participants ---------- */
+  function lesParticipants() { return modeTest ? participantsTest : etat.participants; }
+  function partiesDe(tel) {
+    if (modeTest) return [];
+    return etat.parties.filter(function (p) { return p.tel === tel; });
+  }
+  function chercherParticipant(saisie) {
+    var s = String(saisie || '').replace(/\D/g, '');
+    if (!s) return null;
+    var ps = etat.participants;
+    if (s.length === 10 && ps[s]) return ps[s];
+    if (s.length <= 4) {
+      var num = pad(parseInt(s, 10), 3);
+      for (var k in ps) if (ps[k].numero === num) return ps[k];
     }
+    return null;
+  }
+  // Renvoie {ok, tour, raison, defiPossible}
+  function droitDeJouer(tel) {
+    if (modeTest) return { ok: true, tour: 1 };
+    var p = etat.participants[tel];
+    if (!p) return { ok: true, tour: 1, nouveau: true };
+    var nb = partiesDe(tel).length;
+    if (nb === 0) return { ok: true, tour: 1 };
+    if (nb === 1 && p.defi && !p.defi.utilise) return { ok: true, tour: 2 };
+    if (nb === 1 && !p.defi) return { ok: false, raison: 'Ce numéro a déjà joué (joueur ' + p.numero + '). Défi photo : un tour en plus.', defiPossible: true };
+    return { ok: false, raison: 'Ce numéro a déjà joué ses 2 tours (joueur ' + p.numero + ').' };
+  }
+
+  /* ---------- Saisie du téléphone ---------- */
+  var tel = '';
+  var enCours = false;
+  function telValide(t) { return /^0[1-9]\d{8}$/.test(t); }
+  function majAffichageTel() {
+    var html = '';
+    for (var i = 0; i < 10; i++) {
+      html += i < tel.length ? tel[i] : '<span class="vide">_</span>';
+      if (i % 2 === 1 && i < 9) html += ' ';
+    }
+    var el = document.getElementById('tel-affichage');
+    el.innerHTML = html;
+    el.classList.toggle('complet', tel.length === 10);
     majBoutonJouer();
   }
   function setMessage(txt, ok) {
@@ -526,89 +606,122 @@
     m.style.color = ok ? 'var(--vert)' : 'var(--rouge)';
   }
   function majBoutonJouer() {
-    var b = document.getElementById('btn-jouer');
-    b.disabled = enCours || saisie.length !== 3 || (!modeTest && periode() !== 'actif');
+    document.getElementById('btn-jouer').disabled = enCours || tel.length !== 10 || (!modeTest && periode() !== 'actif');
   }
-  function partiesDe(fiche) {
-    return etat.parties.filter(function (p) { return p.fiche === fiche; });
-  }
-  // Renvoie {ok, tour, raison}
-  function verifierFiche(fiche) {
-    var n = parseInt(fiche, 10);
-    if (isNaN(n) || n < FICHE_MIN || n > FICHE_MAX) return { ok: false, raison: 'Numéro invalide : les fiches vont de 001 à 300.' };
-    if (modeTest) return { ok: true, tour: 1 };
-    var nb = partiesDe(fiche).length;
-    if (nb === 0) return { ok: true, tour: 1 };
-    if (nb === 1 && etat.bonus[fiche] && !etat.bonus[fiche].utilise) return { ok: true, tour: 2 };
-    if (nb === 1 && !etat.bonus[fiche]) return { ok: false, raison: 'La fiche ' + fiche + ' a déjà joué.', bonusPossible: true };
-    return { ok: false, raison: 'La fiche ' + fiche + ' a déjà utilisé ses 2 tours.' };
+  function toucheTel(k) {
+    if (enCours) return;
+    if (k === 'C') tel = '';
+    else if (k === 'B') tel = tel.slice(0, -1);
+    else if (tel.length < 10) tel += k;
+    setMessage('');
+    document.getElementById('zone-bonus').style.display = 'none';
+    majAffichageTel();
   }
   document.getElementById('clavier').addEventListener('click', function (ev) {
     var k = ev.target.getAttribute('data-k');
-    if (!k || enCours) return;
-    if (k === 'C') saisie = '';
-    else if (k === 'B') saisie = saisie.slice(0, -1);
-    else if (saisie.length < 3) saisie += k;
-    setMessage('');
-    document.getElementById('zone-bonus').style.display = 'none';
-    majAffichageFiche();
+    if (k) toucheTel(k);
   });
   document.addEventListener('keydown', function (ev) {
     if (document.querySelector('.ecran.ouvert') || enCours) return;
-    if (/^[0-9]$/.test(ev.key) && saisie.length < 3) saisie += ev.key;
-    else if (ev.key === 'Backspace') saisie = saisie.slice(0, -1);
-    else if (ev.key === 'Enter') { lancer(); return; }
-    else return;
-    setMessage('');
-    majAffichageFiche();
+    if (/^[0-9]$/.test(ev.key)) toucheTel(ev.key);
+    else if (ev.key === 'Backspace') toucheTel('B');
+    else if (ev.key === 'Enter') continuer();
+  });
+
+  function continuer() {
+    if (enCours || tel.length !== 10) return;
+    if (!modeTest && periode() !== 'actif') { setMessage('Le jeu est ouvert du 5 au 12 décembre 2026.'); return; }
+    if (!telValide(tel)) { setMessage('Numéro incomplet ou invalide : 10 chiffres commençant par 0.'); return; }
+    var d = droitDeJouer(tel);
+    if (!d.ok) {
+      setMessage(d.raison);
+      document.getElementById('zone-bonus').style.display = d.defiPossible ? 'block' : 'none';
+      return;
+    }
+    if (d.nouveau || modeTest) ouvrirInscription();
+    else jouer(etat.participants[tel], d.tour);
+  }
+  document.getElementById('btn-jouer').addEventListener('click', continuer);
+
+  /* ---------- Inscription ---------- */
+  function ouvrirInscription() {
+    ['i-prenom', 'i-nom', 'i-email'].forEach(function (id) { document.getElementById(id).value = ''; });
+    document.getElementById('i-majeur').checked = false;
+    document.getElementById('i-consent').checked = false;
+    document.getElementById('form-retour').textContent = '';
+    document.getElementById('insc-tel').textContent = 'Téléphone : ' + telFr(tel);
+    document.getElementById('ecran-inscription').classList.add('ouvert');
+  }
+  function emailValide(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e); }
+  document.getElementById('btn-insc-annuler').addEventListener('click', function () {
+    document.getElementById('ecran-inscription').classList.remove('ouvert');
+  });
+  document.getElementById('btn-insc-valider').addEventListener('click', function () {
+    var retour = document.getElementById('form-retour');
+    var email = document.getElementById('i-email').value.trim();
+    var consent = document.getElementById('i-consent').checked;
+    if (!document.getElementById('i-majeur').checked) { retour.textContent = 'Cochez la case : le jeu est réservé aux 18 ans et plus.'; return; }
+    if (email && !emailValide(email)) { retour.textContent = "L'e-mail semble incomplet (ou laissez-le vide)."; return; }
+    var maintenant = new Date();
+    var p = {
+      numero: modeTest ? 'TEST' : pad(etat.prochainNumero, 3),
+      tel: tel,
+      prenom: document.getElementById('i-prenom').value.trim(),
+      nom: document.getElementById('i-nom').value.trim(),
+      email: email,
+      majeur: true,
+      inscription: maintenant.toISOString(),
+      consentement: consent,
+      consentementDate: consent ? maintenant.toISOString() : '',
+      consentementTexte: consent ? document.getElementById('i-consent-texte').textContent : '',
+      origine: consent ? ORIGINE : '',
+      defi: null
+    };
+    if (modeTest) participantsTest[tel] = p;
+    else {
+      etat.participants[tel] = p;
+      etat.prochainNumero++;
+      sauver();
+    }
+    document.getElementById('ecran-inscription').classList.remove('ouvert');
+    jouer(p, 1);
   });
 
   /* ---------- Partie ---------- */
-  var partieCourante = null;
-  function lancer() {
-    if (enCours || saisie.length !== 3) return;
-    if (!modeTest && periode() !== 'actif') { setMessage('Le jeu est ouvert du 5 au 12 décembre 2026.'); return; }
-    var fiche = saisie;
-    var v = verifierFiche(fiche);
-    if (!v.ok) {
-      setMessage(v.raison);
-      document.getElementById('zone-bonus').style.display = v.bonusPossible ? 'block' : 'none';
-      return;
-    }
+  function jouer(participant, tour) {
     // Le résultat est tiré avant l'animation.
     var index = tirerEntier(NB_CASES);
-    var gagne = estGagnante(index);
+    var res = resultatCase(index);
     var maintenant = new Date();
     var partie = {
       n: modeTest ? 0 : etat.prochainN,
       ts: maintenant.toISOString(),
       date: dateFr(maintenant),
       heure: heureFr(maintenant),
-      fiche: fiche,
-      tour: v.tour,
+      numero: participant.numero,
+      tel: participant.tel,
+      tour: tour,
       case: index,
-      resultat: gagne ? 'gagné' : 'perdu',
+      resultat: res,
       bon: '',
-      validite: '',
-      email: '', telephone: '', consentement: false, consentementDate: '', consentementTexte: '', origine: ''
+      validite: ''
     };
-    if (gagne) {
-      var numBon = modeTest ? 'TEST' : 'B-' + pad(etat.prochainBon, 3);
-      partie.bon = numBon;
+    if (res !== RES_PERDU) {
+      if (modeTest) partie.bon = 'TEST';
+      else if (res === RES_MOINS5) partie.bon = 'B-' + pad(etat.prochainBon++, 3);
+      else partie.bon = 'D-' + pad(etat.prochainBonD++, 3);
       partie.validite = dateFr(finValidite(maintenant));
     }
     if (!modeTest) {
       etat.prochainN++;
-      if (gagne) etat.prochainBon++;
       etat.parties.push(partie);
-      if (v.tour === 2 && etat.bonus[fiche]) etat.bonus[fiche].utilise = true;
+      if (tour === 2 && participant.defi) participant.defi.utilise = true;
       sauver();   // enregistré avant l'animation : recharger la page ne permet pas de rejouer
     }
-    partieCourante = partie;
 
     enCours = true;
     majBoutonJouer();
-    setMessage('');
+    setMessage('Joueur ' + participant.numero + (tour === 2 ? ' : tour bonus' : '') + '. Bonne chance !', true);
     document.getElementById('zone-bonus').style.display = 'none';
 
     var jitter = (tirerEntier(1000) / 1000 - 0.5) * 18;   // reste dans la case (±9° sur 30°)
@@ -626,22 +739,30 @@
       rotationActuelle = cible;
       if (caseSousPointeur(cible) !== index) console.error('Écart roue / tirage', index, caseSousPointeur(cible));
       enCours = false;
-      afficherResultat(partie);
+      afficherResultat(partie, participant);
     }
     roue.addEventListener('transitionend', finAnimation);
     setTimeout(finAnimation, DUREE_ANIM + 400);
   }
-  document.getElementById('btn-jouer').addEventListener('click', lancer);
 
   var minuterieResultat = null;
-  function afficherResultat(p) {
+  function afficherResultat(p, participant) {
     var carte = document.getElementById('carte-resultat');
-    var gagne = p.resultat === 'gagné';
+    var gagne = p.resultat !== RES_PERDU;
     carte.classList.toggle('gagne', gagne);
-    document.getElementById('res-titre').textContent = gagne ? 'Gagné !' : 'Dommage !';
-    document.getElementById('res-texte').textContent = gagne
-      ? 'Vous remportez un bon de 5 % de réduction.'
-      : "Pas de bon cette fois. Merci d'avoir joué !";
+    document.getElementById('res-numero').innerHTML = 'Joueur n° <b>' + participant.numero + '</b>';
+    if (p.resultat === RES_DOUDOUNE) {
+      document.getElementById('res-titre').textContent = 'Énorme !';
+      document.getElementById('res-texte').textContent = 'Vous gagnez la doudoune Calvin Klein à 99,99 € au lieu de 199,99 €.';
+      document.getElementById('res-bon-titre').textContent = 'Votre bon doudoune à 99,99 €';
+    } else if (p.resultat === RES_MOINS5) {
+      document.getElementById('res-titre').textContent = 'Gagné !';
+      document.getElementById('res-texte').textContent = 'Vous remportez un bon de 5 % de réduction.';
+      document.getElementById('res-bon-titre').textContent = 'Votre bon de réduction';
+    } else {
+      document.getElementById('res-titre').textContent = 'Dommage !';
+      document.getElementById('res-texte').textContent = "Pas de lot cette fois. Merci d'avoir joué !";
+    }
     document.getElementById('res-bon').style.display = gagne ? 'block' : 'none';
     if (gagne) {
       document.getElementById('res-bon-num').textContent = p.bon;
@@ -649,57 +770,26 @@
         'Valable jusqu\'au ' + p.validite + ' inclus, en un seul passage en caisse, non cumulable. Le vendeur vous remet votre bon papier n° ' + p.bon + '.' +
         (modeTest ? ' (partie de test)' : '');
     }
-    document.getElementById('c-email').value = '';
-    document.getElementById('c-tel').value = '';
-    document.getElementById('c-consent').checked = false;
-    document.getElementById('contact-retour').textContent = '';
-    document.getElementById('btn-contact').disabled = false;
+    var defi = document.getElementById('res-defi');
+    if (participant.defi) {
+      defi.className = 'defi ok';
+      defi.textContent = 'Vous êtes inscrit au tirage au sort du dimanche 13 décembre : une doudoune Calvin Klein offerte (valeur 199,99 €).';
+    } else {
+      defi.className = 'defi';
+      defi.innerHTML = '<b>Doudoune offerte le 13 décembre :</b> abonnez-vous à @cover_besancon, prenez-vous en photo chez COVER avec un article porté et publiez-la avec #coverbesancon. Montrez-la au vendeur : vous êtes inscrit au tirage au sort et vous gagnez un tour de roue en plus.';
+    }
     document.getElementById('ecran-resultat').classList.add('ouvert');
-    document.getElementById('carte-resultat').scrollTop = 0;
+    carte.scrollTop = 0;
     clearTimeout(minuterieResultat);
     minuterieResultat = setTimeout(joueurSuivant, 3 * 60 * 1000);   // retour automatique après 3 minutes
   }
 
-  function emailValide(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e); }
-  function telValide(t) { return t.replace(/[^\d]/g, '').length >= 9; }
-  // Renvoie true si les coordonnées sont enregistrées (ou rien à enregistrer)
-  function enregistrerContact(silencieux) {
-    var retour = document.getElementById('contact-retour');
-    var email = document.getElementById('c-email').value.trim();
-    var tel = document.getElementById('c-tel').value.trim();
-    var consent = document.getElementById('c-consent').checked;
-    if (!email && !tel) { if (!silencieux) { retour.className = 'ko'; retour.textContent = 'Indiquez un e-mail ou un téléphone.'; } return false; }
-    if (!consent) { if (!silencieux) { retour.className = 'ko'; retour.textContent = 'Cochez la case pour que nous puissions vous écrire.'; } return false; }
-    if (email && !emailValide(email)) { if (!silencieux) { retour.className = 'ko'; retour.textContent = "L'e-mail semble incomplet."; } return false; }
-    if (tel && !telValide(tel)) { if (!silencieux) { retour.className = 'ko'; retour.textContent = 'Le numéro de téléphone semble incomplet.'; } return false; }
-    var p = partieCourante;
-    if (!p) return false;
-    p.email = email;
-    p.telephone = tel;
-    p.consentement = true;
-    p.consentementDate = new Date().toISOString();
-    p.consentementTexte = document.getElementById('c-consent-texte').textContent;
-    p.origine = ORIGINE;
-    if (!modeTest) sauver();
-    retour.className = 'ok';
-    retour.textContent = modeTest ? 'Mode test : coordonnées non enregistrées.' : 'Merci, c\'est noté !';
-    document.getElementById('btn-contact').disabled = true;
-    return true;
-  }
-  document.getElementById('btn-contact').addEventListener('click', function () { enregistrerContact(false); });
-
   function joueurSuivant() {
     clearTimeout(minuterieResultat);
-    // Si la personne a rempli et coché sans valider, on enregistre. Sans case cochée, rien n'est conservé.
-    if (!document.getElementById('btn-contact').disabled) enregistrerContact(true);
-    document.getElementById('c-email').value = '';
-    document.getElementById('c-tel').value = '';
-    document.getElementById('c-consent').checked = false;
     document.getElementById('ecran-resultat').classList.remove('ouvert');
-    partieCourante = null;
-    saisie = '';
+    tel = '';
     setMessage('');
-    majAffichageFiche();
+    majAffichageTel();
   }
   document.getElementById('btn-suivant').addEventListener('click', joueurSuivant);
 
@@ -743,34 +833,79 @@
     if (codeSaisi.length === String(etat.code).length) validerCode();
   });
 
-  /* ---------- Tour bonus ---------- */
-  function debloquerBonus(fiche) {
-    var n = parseInt(fiche, 10);
-    if (isNaN(n) || n < FICHE_MIN || n > FICHE_MAX) return { ok: false, txt: 'Numéro de fiche invalide.' };
-    fiche = pad(n, 3);
-    var nb = partiesDe(fiche).length;
-    if (nb === 0) return { ok: false, txt: 'La fiche ' + fiche + " n'a pas encore joué son premier tour." };
-    if (etat.bonus[fiche]) return { ok: false, txt: 'La fiche ' + fiche + ' a déjà eu son tour bonus.' };
-    if (nb >= 2) return { ok: false, txt: 'La fiche ' + fiche + ' a déjà joué 2 tours.' };
-    etat.bonus[fiche] = { ts: new Date().toISOString(), utilise: false };
-    if (!sauver()) return { ok: false, txt: 'Mémoire indisponible : déblocage non enregistré.' };
-    return { ok: true, txt: 'Tour bonus débloqué pour la fiche ' + fiche + '.', fiche: fiche };
+  /* ---------- Défi photo : tour bonus + inscription au tirage ---------- */
+  function validerDefi(saisie) {
+    var p = chercherParticipant(saisie);
+    if (!p) return { ok: false, txt: 'Joueur introuvable : il doit d\'abord jouer un premier tour.' };
+    if (p.defi) return { ok: false, txt: 'Le joueur ' + p.numero + ' a déjà validé son défi photo.' };
+    p.defi = { ts: new Date().toISOString(), utilise: partiesDe(p.tel).length >= 2 };
+    if (!sauver()) return { ok: false, txt: 'Mémoire indisponible : défi non enregistré.' };
+    return { ok: true, txt: 'Défi validé pour le joueur ' + p.numero + ' : inscrit au tirage, un tour de roue en plus.', p: p };
   }
   document.getElementById('btn-bonus').addEventListener('click', function () {
-    var fiche = saisie;
-    ouvrirCode('Tour bonus', 'Fiche ' + fiche + ' : vérifiez la story ou la publication qui cite COVER, puis tapez votre code.', function () {
-      var r = debloquerBonus(fiche);
+    var t = tel;
+    ouvrirCode('Défi photo', 'Vérifiez l\'abonnement à @cover_besancon et la photo chez COVER publiée avec #coverbesancon, puis tapez votre code.', function () {
+      var r = validerDefi(t);
       document.getElementById('zone-bonus').style.display = 'none';
-      setMessage(r.txt + (r.ok ? ' Appuyez sur « Lancer la roue ».' : ''), r.ok);
+      setMessage(r.txt + (r.ok ? ' Appuyez sur « Continuer ».' : ''), r.ok);
     });
   });
+
+  /* ---------- Tirage au sort ---------- */
+  function eligibles() {
+    var ps = etat.participants, liste = [];
+    for (var k in ps) if (ps[k].defi) liste.push(ps[k]);
+    liste.sort(function (a, b) { return a.numero < b.numero ? -1 : 1; });
+    return liste;
+  }
+  function faireTirage(liste) {
+    var reste = liste.slice(), choisis = [];
+    while (choisis.length < 3 && reste.length) choisis.push(reste.splice(tirerEntier(reste.length), 1)[0]);
+    return choisis;
+  }
+  function libelleJoueur(p) {
+    var nom = [p.prenom, p.nom].filter(Boolean).join(' ');
+    return 'Joueur ' + p.numero + (nom ? ', ' + echap(nom) : '') + ', ' + telFr(p.tel);
+  }
+  function afficherTirage(t, test) {
+    var roles = ['Gagnant', '1er suppléant', '2e suppléant'];
+    var html = t.numeros.map(function (num, i) {
+      var p = null;
+      for (var k in etat.participants) if (etat.participants[k].numero === num) p = etat.participants[k];
+      return '<div><b>' + roles[i] + ' :</b> ' + (p ? libelleJoueur(p) : 'joueur ' + num) + '</div>';
+    }).join('');
+    var d = new Date(t.ts);
+    html += '<div style="background:none;padding:0" class="mention">' + (test ? 'Tirage de test, non enregistré. ' : 'Tirage effectué le ') + dateFr(d) + ' à ' + heureFr(d) + ' parmi ' + t.nbEligibles + ' joueur(s) inscrit(s).</div>';
+    document.getElementById('v-tirage').innerHTML = html;
+  }
+  document.getElementById('v-btn-tirage').addEventListener('click', function () {
+    var el = document.getElementById('v-retour-tirage');
+    el.className = 'retour ko';
+    if (!modeTest && etat.tirage) { el.textContent = 'Le tirage a déjà été fait.'; return; }
+    if (!modeTest && new Date() < TIRAGE) { el.textContent = 'Le tirage n\'est possible qu\'à partir du dimanche 13 décembre 2026.'; return; }
+    var liste = eligibles();
+    if (!liste.length) { el.textContent = 'Aucun joueur n\'a validé le défi photo.'; return; }
+    if (!modeTest && !confirm('Lancer le tirage au sort parmi ' + liste.length + ' joueur(s) ? Il ne pourra pas être refait.')) return;
+    var t = { ts: new Date().toISOString(), nbEligibles: liste.length, numeros: faireTirage(liste).map(function (p) { return p.numero; }) };
+    if (!modeTest) { etat.tirage = t; sauver(); }
+    afficherTirage(t, modeTest);
+    el.textContent = '';
+    majVendeur();
+  });
+  function roleTirage(numero) {
+    if (!etat.tirage) return '';
+    var i = etat.tirage.numeros.indexOf(numero);
+    return ['gagnant', 'suppléant 1', 'suppléant 2'][i] || '';
+  }
 
   /* ---------- Espace vendeur ---------- */
   function ouvrirVendeur() {
     document.getElementById('v-test').checked = modeTest;
-    ['v-retour-bonus', 'v-retour-simu', 'v-retour-parties', 'v-retour-code'].forEach(function (id) {
+    ['v-retour-defi', 'v-retour-simu', 'v-retour-parties', 'v-retour-code', 'v-retour-tirage'].forEach(function (id) {
       document.getElementById(id).textContent = '';
     });
+    document.getElementById('v-tirage').innerHTML = '';
+    if (etat.tirage) afficherTirage(etat.tirage, false);
     majVendeur();
     document.getElementById('ecran-vendeur').classList.add('ouvert');
   }
@@ -779,29 +914,31 @@
   }
   function majVendeur() {
     var parties = etat.parties;
-    var gagnees = parties.filter(function (p) { return p.resultat === 'gagné'; }).length;
-    var fiches = {};
-    parties.forEach(function (p) { fiches[p.fiche] = 1; });
-    var bonusUtilises = parties.filter(function (p) { return p.tour === 2; }).length;
-    var contacts = parties.filter(function (p) { return p.consentement; }).length;
-    var taux = parties.length ? (100 * gagnees / parties.length).toFixed(1).replace('.', ',') + ' %' : '0 %';
+    var nbParticipants = Object.keys(etat.participants).length;
+    var moins5 = parties.filter(function (p) { return p.resultat === RES_MOINS5; }).length;
+    var doud = parties.filter(function (p) { return p.resultat === RES_DOUDOUNE; }).length;
+    var defis = eligibles().length;
+    var contacts = 0;
+    for (var k in etat.participants) if (etat.participants[k].consentement) contacts++;
     var stats = [
+      [nbParticipants, 'Joueurs'],
       [parties.length, 'Parties'],
-      [Object.keys(fiches).length, 'Fiches jouées'],
-      [gagnees, 'Bons émis'],
-      [taux, 'Taux de gain'],
-      [bonusUtilises, 'Tours bonus joués'],
+      [moins5, 'Bons -5 %'],
+      [doud, 'Doudounes à 99,99 €'],
+      [defis, 'Inscrits au tirage'],
       [contacts, 'Contacts avec accord']
     ];
     document.getElementById('stats').innerHTML = stats.map(function (s) {
       return '<div class="stat"><b>' + s[0] + '</b><span>' + s[1] + '</span></div>';
     }).join('');
+    document.getElementById('v-btn-tirage').disabled = !!etat.tirage && !modeTest;
     var lignes = parties.slice().reverse().map(function (p) {
-      return '<tr><td>' + p.n + '</td><td>' + p.date + '</td><td>' + p.heure + '</td><td>' + p.fiche + '</td><td>' + p.tour +
-        '</td><td>' + (p.resultat === 'gagné' ? '<b style="color:var(--rouge)">Gagné</b>' : 'Perdu') + '</td><td>' + echap(p.bon) +
-        '</td><td>' + (p.consentement ? 'Oui' : '') + '</td></tr>';
+      var part = etat.participants[p.tel] || {};
+      var res = p.resultat === RES_PERDU ? 'Perdu' : '<b style="color:var(--rouge)">' + (p.resultat === RES_DOUDOUNE ? 'Doudoune 99,99 €' : '-5 %') + '</b>';
+      return '<tr><td>' + p.n + '</td><td>' + p.date + '</td><td>' + p.heure + '</td><td>' + p.numero + '</td><td>' + telMasque(p.tel) +
+        '</td><td>' + p.tour + '</td><td>' + res + '</td><td>' + echap(p.bon) + '</td><td>' + (part.defi ? 'Inscrit' : '') + '</td></tr>';
     });
-    document.getElementById('v-liste').innerHTML = lignes.length ? lignes.join('') : '<tr><td colspan="8">Aucune partie pour l\'instant.</td></tr>';
+    document.getElementById('v-liste').innerHTML = lignes.length ? lignes.join('') : '<tr><td colspan="9">Aucune partie pour l\'instant.</td></tr>';
   }
   document.getElementById('btn-vendeur').addEventListener('click', function () {
     if (enCours) return;
@@ -811,32 +948,36 @@
     document.getElementById('ecran-vendeur').classList.remove('ouvert');
     majBandeau();
   });
-  document.getElementById('v-btn-bonus').addEventListener('click', function () {
-    var champ = document.getElementById('v-fiche-bonus');
-    var r = debloquerBonus(champ.value.trim());
-    var el = document.getElementById('v-retour-bonus');
+  document.getElementById('v-btn-defi').addEventListener('click', function () {
+    var champ = document.getElementById('v-defi');
+    var r = validerDefi(champ.value.trim());
+    var el = document.getElementById('v-retour-defi');
     el.className = 'retour ' + (r.ok ? 'ok' : 'ko');
     el.textContent = r.txt;
-    if (r.ok) champ.value = '';
+    if (r.ok) { champ.value = ''; majVendeur(); }
   });
   document.getElementById('v-test').addEventListener('change', function (ev) {
     modeTest = ev.target.checked;
+    participantsTest = {};
+    majVendeur();
     majBandeau();
   });
 
   function simuler(n) {
-    var g = 0;
-    for (var i = 0; i < n; i++) if (estGagnante(tirerEntier(NB_CASES))) g++;
-    return g / n;
+    var m = 0, d = 0;
+    for (var i = 0; i < n; i++) {
+      var r = resultatCase(tirerEntier(NB_CASES));
+      if (r === RES_MOINS5) m++; else if (r === RES_DOUDOUNE) d++;
+    }
+    return { moins5: m / n, doudoune: d / n };
   }
   document.getElementById('v-btn-simu').addEventListener('click', function () {
     var el = document.getElementById('v-retour-simu');
-    var t0 = performance.now();
-    var prop = simuler(100000);
-    var ok = Math.abs(prop - 0.25) <= 0.01;
+    var s = simuler(100000);
+    var ok = Math.abs(s.moins5 - 0.25) <= 0.01 && Math.abs(s.doudoune - 1 / 12) <= 0.01;
+    var pc = function (x) { return (x * 100).toFixed(2).replace('.', ',') + ' %'; };
     el.className = 'retour ' + (ok ? 'ok' : 'ko');
-    el.textContent = '100 000 tirages : ' + (prop * 100).toFixed(2).replace('.', ',') + ' % de cases gagnantes (attendu 25 % ± 1 point) : ' +
-      (ok ? 'conforme' : 'NON CONFORME') + ' (' + Math.round(performance.now() - t0) + ' ms).';
+    el.textContent = '100 000 tirages : -5 % ' + pc(s.moins5) + ' (attendu 25 %), doudoune ' + pc(s.doudoune) + ' (attendu 8,33 %) : ' + (ok ? 'conforme' : 'NON CONFORME') + '.';
   });
 
   function champCsv(v) {
@@ -844,16 +985,18 @@
     if (/[";\r\n]/.test(v)) v = '"' + v.replace(/"/g, '""') + '"';
     return v;
   }
+  function dateHeure(iso) { if (!iso) return ''; var d = new Date(iso); return dateFr(d) + ' ' + heureFr(d); }
   function exporterCsv() {
-    var entetes = ['n', 'date', 'heure', 'fiche', 'tour', 'résultat', 'bon', 'e-mail', 'téléphone', 'consentement', 'date du consentement', 'texte du consentement', 'origine'];
+    var entetes = ['n', 'date', 'heure', 'joueur', 'tour', 'résultat', 'bon', 'validité', 'téléphone', 'prénom', 'nom', 'e-mail', '18 ans et plus',
+      'consentement', 'date du consentement', 'texte du consentement', 'origine', 'défi photo', 'date du défi', 'tirage'];
     var lignes = [entetes.join(';')];
     etat.parties.forEach(function (p) {
-      var dc = p.consentementDate ? new Date(p.consentementDate) : null;
+      var u = etat.participants[p.tel] || {};
       lignes.push([
-        p.n, p.date, p.heure, p.fiche, p.tour, p.resultat, p.bon,
-        p.email, p.telephone, p.consentement ? 'oui' : 'non',
-        dc ? dateFr(dc) + ' ' + heureFr(dc) : '',
-        p.consentementTexte, p.origine
+        p.n, p.date, p.heure, p.numero, p.tour, p.resultat, p.bon, p.validite,
+        p.tel, u.prenom, u.nom, u.email, u.majeur ? 'oui' : '',
+        u.consentement ? 'oui' : 'non', dateHeure(u.consentementDate), u.consentementTexte, u.origine,
+        u.defi ? 'oui' : 'non', u.defi ? dateHeure(u.defi.ts) : '', roleTirage(p.numero)
       ].map(champCsv).join(';'));
     });
     var contenu = '﻿' + lignes.join('\r\n');
@@ -873,7 +1016,7 @@
 
   document.getElementById('v-btn-effacer').addEventListener('click', function () {
     var el = document.getElementById('v-retour-parties');
-    if (!confirm('Effacer toutes les parties, les bons et les coordonnées ? Pensez à exporter le CSV avant.')) return;
+    if (!confirm('Effacer tous les joueurs, les parties, les bons et le tirage ? Pensez à exporter le CSV avant.')) return;
     var mot = prompt('Pour confirmer, tapez EFFACER');
     if (mot === null || mot.trim().toUpperCase() !== 'EFFACER') { el.className = 'retour ko'; el.textContent = 'Effacement annulé.'; return; }
     var code = etat.code;
@@ -882,6 +1025,7 @@
     sauver();
     el.className = 'retour ok';
     el.textContent = 'Toutes les données ont été effacées.';
+    document.getElementById('v-tirage').innerHTML = '';
     majVendeur();
   });
 
@@ -931,12 +1075,12 @@
   }
 
   /* ---------- Démarrage ---------- */
-  majAffichageFiche();
+  majAffichageTel();
   majBandeau();
   setInterval(majBandeau, 30000);
 
   // Accès pour les tests automatiques
-  window.__roulette = { tirerEntier: tirerEntier, estGagnante: estGagnante, simuler: simuler, rotationPour: rotationPour, caseSousPointeur: caseSousPointeur, NB_CASES: NB_CASES };
+  window.__roulette = { tirerEntier: tirerEntier, resultatCase: resultatCase, simuler: simuler, rotationPour: rotationPour, caseSousPointeur: caseSousPointeur, NB_CASES: NB_CASES };
 })();
 </script>
 </body>
